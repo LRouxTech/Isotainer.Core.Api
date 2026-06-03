@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="LRouxTech.Core.BaseModel" Version="0.4.0" />
+        <PackageReference Include="LRouxTech.Core.ValidationResult" Version="0.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
     </ItemGroup>
 
