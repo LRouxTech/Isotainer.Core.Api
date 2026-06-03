@@ -1,8 +1,8 @@
 ﻿using LRouxTech.Core.BaseModel;
 
-namespace Isotainer.Module.Tanks.Core.Entities;
+namespace Isotainer.Module.Tank.Core.Entities;
 
-public class Isotainer : BaseModel<Isotainer>
+public class IsotainerTank : BaseModel<IsotainerTank>
 {
     public required string TankNumber { get; set; }
     public Guid WashStatusId { get; set; }

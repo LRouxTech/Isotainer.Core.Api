@@ -2,7 +2,7 @@
 
 namespace Isotainer.Module.Finance.Core.Entities;
 
-public class GeneralCosts : BaseModel<GeneralCosts>
+public class GeneralCost : BaseModel<GeneralCost>
 {
     public GeneralCostEnum CostItem { get; set; }
     public double Cost { get; set; }

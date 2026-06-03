@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isotainer.Core.Api", "Isotainer.Core.Api\Isotainer.Core.Api.csproj", "{9E7563D3-E3EF-4B81-805A-CB45B2763809}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isotainer.Module.Tanks", "Isotainer.Module.Tanks\Isotainer.Module.Tanks.csproj", "{F568E810-0A20-43BC-B4CD-E6784EA4E63D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isotainer.Module.Tank", "Isotainer.Module.Tank\Isotainer.Module.Tank.csproj", "{F568E810-0A20-43BC-B4CD-E6784EA4E63D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isotainer.Module.Wash", "Isotainer.Module.Wash\Isotainer.Module.Wash.csproj", "{2CAC6ABD-F8C8-49AE-8D21-F36E2416EB68}"
 EndProject

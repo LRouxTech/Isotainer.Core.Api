@@ -8,4 +8,6 @@ public class Invoice : BaseModel<Invoice>
     public DateTime InvoicedOn { get; set; }
     public double TotalCost { get; set; }
     public string? XeroId { get; set; }
+    
+    public virtual ICollection<InvoiceLine>? InvoiceLines { get; set; }
 }

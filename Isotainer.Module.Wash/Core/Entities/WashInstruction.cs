@@ -2,7 +2,7 @@
 
 namespace Isotainer.Module.Wash.Core.Entities;
 
-public class WashingInstructions : BaseModel<WashingInstructions>
+public class WashInstruction : BaseModel<WashInstruction>
 {
     public Guid IsotainerId { get; set; }
     public Guid WashTypeId { get; set; }

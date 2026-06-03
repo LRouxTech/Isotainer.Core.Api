@@ -6,4 +6,6 @@ public class WashType : BaseModel<WashType>
 {
     public required string Type { get; set; }
     public double Cost { get; set; }
+    
+    public virtual ICollection<WashInstruction>? WashInstructions { get; set; }
 }
