@@ -12,7 +12,7 @@ public static class WashInstructionConfiguration
         builder.ToTable("WashInstruction");
         builder.ConfigureBaseModel();
         
-        builder.Property(u => u.IsotainerId)
+        builder.Property(u => u.IsotainerTankId)
             .IsRequired()
             .HasMaxLength(200);
         

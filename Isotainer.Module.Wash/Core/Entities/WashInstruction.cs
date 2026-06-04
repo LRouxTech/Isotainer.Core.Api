@@ -4,7 +4,7 @@ namespace Isotainer.Module.Wash.Core.Entities;
 
 public class WashInstruction : BaseModel<WashInstruction>
 {
-    public Guid IsotainerId { get; set; }
+    public Guid IsotainerTankId { get; set; }
     public Guid WashTypeId { get; set; }
     public virtual WashType? WashType { get; set; }
     public DateTime InstructedOn { get; set; }

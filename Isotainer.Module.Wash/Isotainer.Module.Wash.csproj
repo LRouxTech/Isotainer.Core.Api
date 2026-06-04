@@ -7,7 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Api\" />
+      <Folder Include="Api\Endpoints\" />
+      <Folder Include="Api\Extensions\" />
+      <Folder Include="Infrastructure\Services\" />
     </ItemGroup>
 
     <ItemGroup>
