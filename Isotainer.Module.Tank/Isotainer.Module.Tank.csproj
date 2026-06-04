@@ -8,7 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Api\" />
+      <Folder Include="Api\Endpoints\" />
+      <Folder Include="Api\Extensions\" />
+      <Folder Include="Core\ViewModels\IsotainerTank\" />
+      <Folder Include="Infrastructure\Services\" />
     </ItemGroup>
 
     <ItemGroup>
