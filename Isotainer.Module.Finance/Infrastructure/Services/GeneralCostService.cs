@@ -10,7 +10,7 @@ namespace Isotainer.Module.Finance.Infrastructure.Services;
 
 public class GeneralCostService(IFinanceDbContextFactory dbContextFactory, IGeneralCostValidator generalCostValidator) : IGeneralCostService
 {
-    public async Task<Result<GeneralCostUpdateResponse>> UpdateGeneralCost(UpdateGeneralCostRequest request)
+    public async Task<Result<GeneralCostUpdateResponse>> UpdateGeneralCost(Guid id, UpdateGeneralCostRequest request)
     {
         var validation =  generalCostValidator.ValidateUpdateGeneralCost(request);
         if (validation.IsFailure)
@@ -19,7 +19,7 @@ public class GeneralCostService(IFinanceDbContextFactory dbContextFactory, IGene
         }
         
         await using var financeContext = await dbContextFactory.CreateDbContextAsync();
-        var generalCost = await financeContext.GeneralCosts.FirstOrDefaultAsync(x => x.Id == request.GeneralCostId);
+        var generalCost = await financeContext.GeneralCosts.FirstOrDefaultAsync(x => x.Id == id);
         if (generalCost == null)
         {
             return GeneralCostErrors.NotFound;

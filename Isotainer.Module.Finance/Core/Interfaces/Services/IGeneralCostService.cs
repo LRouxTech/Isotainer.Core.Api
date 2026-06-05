@@ -5,6 +5,6 @@ namespace Isotainer.Module.Finance.Core.Interfaces.Services;
 
 public interface IGeneralCostService
 {
-    Task<Result<GeneralCostUpdateResponse>> UpdateGeneralCost(UpdateGeneralCostRequest request);
+    Task<Result<GeneralCostUpdateResponse>> UpdateGeneralCost(Guid Id, UpdateGeneralCostRequest request);
     Task<Result<GeneralCostListResponse>> GetGeneralCosts();
 }

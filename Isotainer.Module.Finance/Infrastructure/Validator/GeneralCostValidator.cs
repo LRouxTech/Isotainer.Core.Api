@@ -10,11 +10,6 @@ public class GeneralCostValidator : IGeneralCostValidator
 {
     public Result<bool> ValidateUpdateGeneralCost(UpdateGeneralCostRequest request)
     {
-        if (request.GeneralCostId == Guid.Empty)
-        {
-            return GeneralCostErrors.NotFound;
-        }
-
         if (request.Cost < 0)
         {
             return GeneralCostErrors.InvalidCost;
