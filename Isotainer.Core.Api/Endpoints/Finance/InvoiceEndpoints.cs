@@ -13,7 +13,7 @@ public static class InvoiceEndpoints
         var group = endpoints.MapGroup(prefix)
             .WithTags("Invoice");
         
-        group.MapGet("/tank/{TankId:guid}", async (Guid TankId, [FromServices] IInvoiceService generalCostService) =>
+        group.MapGet("/tank/{TankId:guid}/", async (Guid TankId, [FromServices] IInvoiceService generalCostService) =>
             {
                 var result = await generalCostService.GetInvoices(TankId);
                 if (result.IsFailure)
@@ -28,7 +28,7 @@ public static class InvoiceEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapGet("/company/{CompanyId:guid}", async (Guid companyId, [FromServices] IInvoiceService generalCostService) =>
+        group.MapGet("/company/{CompanyId:guid}/", async (Guid companyId, [FromServices] IInvoiceService generalCostService) =>
             {
                 var result = await generalCostService.GetInvoices(companyId);
                 if (result.IsFailure)

@@ -5,5 +5,5 @@ namespace Isotainer.Module.Finance.Core.Interfaces.Services;
 
 public interface IInvoiceLineService
 {
-    Task<Result<InvoiceLineListResponse>> GetInvoiceLines(InvoiceLineListRequest request);
+    Task<Result<InvoiceLineListResponse>> GetInvoiceLines(Guid invoiceId);
 }

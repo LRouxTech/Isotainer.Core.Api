@@ -7,19 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Isotainer.Module.Finance.Infrastructure.Services;
 
-public class InvoiceLineService(IFinanceDbContextFactory dbContextFactory, IInvoiceLineValidator invoiceLineValidator) : IInvoiceLineService
+public class InvoiceLineService(IFinanceDbContextFactory dbContextFactory) : IInvoiceLineService
 {
-    public async Task<Result<InvoiceLineListResponse>> GetInvoiceLines(InvoiceLineListRequest request)
+    public async Task<Result<InvoiceLineListResponse>> GetInvoiceLines(Guid invoiceId)
     {
-        var validation = invoiceLineValidator.ValidateInvoiceLineListRequest(request);
-        if (validation.IsFailure)
-        {
-            return validation.Error;
-        }
-        
         await using var financeContext = await dbContextFactory.CreateDbContextAsync();
         var invoiceLines = await financeContext.InvoiceLines
-            .Where(x => x.InvoiceId == request.InvoiceId)
+            .Where(x => x.InvoiceId == invoiceId)
             .Select(x => new InvoiceLineItem(x.Id, x.ItemName, x.Cost))
             .ToListAsync();
         
