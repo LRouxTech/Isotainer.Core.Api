@@ -7,39 +7,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Isotainer.Module.Finance.Infrastructure.Services;
 
-public class InvoiceService(IFinanceDbContextFactory dbContextFactory, IInvoiceValidator invoiceValidator) : IInvoiceService
+public class InvoiceService(IFinanceDbContextFactory dbContextFactory) : IInvoiceService
 {
-    public async Task<Result<CompanyInvoiceResponse>> GenerateCompanyInvoice(GenerateCompanyInvoiceRequest request)
+    public async Task<Result<CompanyInvoiceResponse>> GenerateCompanyInvoice(Guid companyId)
     {
-        var validation = invoiceValidator.ValidateGenerateCompanyInvoice(request);
-        if (validation.IsFailure)
-        {
-            return validation.Error;
-        }
         throw new NotImplementedException();
     }
 
-    public async Task<Result<IsotainerTankInvoiceResponse>> GenerateIsotainerTankInvoice(GenerateIsotainerTankInvoiceRequest request)
+    public async Task<Result<IsotainerTankInvoiceResponse>> GenerateIsotainerTankInvoice(Guid tankId)
     {
-        var validation = invoiceValidator.ValidateGenerateIsotainerTankInvoice(request);
-        if (validation.IsFailure)
-        {
-            return validation.Error;
-        }
         throw new NotImplementedException();
     }
 
-    public async Task<Result<InvoiceListResponse>> GetInvoices(InvoiceListRequest request)
+    public async Task<Result<InvoiceListResponse>> GetInvoices(Guid tankId)
     {
-        var validation = invoiceValidator.ValidateInvoiceListRequest(request);
-        if (validation.IsFailure)
-        {
-            return validation.Error;
-        }
-        
         await using var financeContext = await dbContextFactory.CreateDbContextAsync();
         var invoices = await financeContext.Invoices
-            .Where(x => x.IsotainerId == request.IsotainerTankId)
+            .Where(x => x.IsotainerId == tankId)
             .Select(x => new InvoiceItem(x.IsotainerId, x.InvoicedOn, x.TotalCost, x.XeroId, null))
             .ToListAsync();
         
