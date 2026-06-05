@@ -5,8 +5,8 @@ namespace Isotainer.Module.Wash.Core.Interfaces.Services;
 
 public interface IWashInstructionService
 {
-    Result<WashInstructionResponse>  CreateWashInstruction(CreateWashInstructionRequest request);
-    Result<WashInstructionResponse>  UpdateWashInstruction(UpdateWashInstructionRequest request);
-    Result<WashInstructionsListResponse> GetWashInstructions(WashInstructionListRequest request);
-    Result<bool> ArchiveWashInstruction(ArchiveWashInstructionRequest request);
+    Task<Result<WashInstructionResponse>>  CreateWashInstruction(CreateWashInstructionRequest request);
+    Task<Result<WashInstructionResponse>>  UpdateWashInstruction(UpdateWashInstructionRequest request);
+    Task<Result<WashInstructionsListResponse>> GetWashInstructions(WashInstructionListRequest request);
+    Task<Result<bool>> ArchiveWashInstruction(ArchiveWashInstructionRequest request);
 }

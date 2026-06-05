@@ -69,9 +69,9 @@ public class CompanyService(ITankDbContextFactory dbContextFactory, ICompanyVali
     public async Task<Result<CompanyListResponse>> GetCompanyList()
     {
         await using var tankContext = await dbContextFactory.CreateDbContextAsync();
-        var companies = tankContext.Companies
+        var companies = await tankContext.Companies
             .Select(x => new CompanyItem(x.Id, x.Name))
-            .ToList(); 
+            .ToListAsync(); 
         
         return new CompanyListResponse(companies);
     }

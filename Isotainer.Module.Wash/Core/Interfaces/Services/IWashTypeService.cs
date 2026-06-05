@@ -5,8 +5,8 @@ namespace Isotainer.Module.Wash.Core.Interfaces.Services;
 
 public interface IWashTypeService
 {
-    Result<WashTypeResponse> CreateWashType(CreateWashTypeRequest request);
-    Result<WashTypeResponse> UpdateWashType(UpdateWashTypeRequest request);
-    Result<WashTypeListResponse> ListWashTypes();
-    Result<bool> ArchiveWashType(ArchiveWashTypeRequest request);
+    Task<Result<WashTypeResponse>> CreateWashType(CreateWashTypeRequest request);
+    Task<Result<WashTypeResponse>> UpdateWashType(UpdateWashTypeRequest request);
+    Task<Result<WashTypeListResponse>> ListWashTypes();
+    Task<Result<bool>> ArchiveWashType(ArchiveWashTypeRequest request);
 }

@@ -15,6 +15,9 @@ public static class WashTypeConfiguration
         builder.Property(u => u.Type)
             .IsRequired()
             .HasMaxLength(100);
+        
+        builder.HasIndex(u => u.Type)
+            .IsUnique();
 
         builder.Property(u => u.Cost)
             .IsRequired()
