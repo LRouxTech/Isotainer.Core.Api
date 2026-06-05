@@ -68,10 +68,11 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         var washTypes = await washContext.WashTypes.ToListAsync();
         
         var washInstructions = await washContext.WashInstructions
-            .Select(x => new { x.Id, x.IsotainerTankId, x.InstructedOn, x.WashTypeId })
+            .Where(x => x.WashTypeId == request.WashTypeId)
+            .Select(x => new WashInstructionItem(x.Id, x.IsotainerTankId, x.WashTypeId, x.InstructedOn ))
             .ToListAsync();
 
-        return new WashInstructionsListResponse([]);
+        return new WashInstructionsListResponse(washInstructions);
     }
 
     public  async Task<Result<bool>> ArchiveWashInstruction(ArchiveWashInstructionRequest request)

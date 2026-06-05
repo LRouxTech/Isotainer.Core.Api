@@ -5,7 +5,7 @@ namespace Isotainer.Module.Finance.Core.Interfaces.Services;
 
 public interface IInvoiceService
 {
-    Result<CompanyInvoiceResponse>  GenerateCompanyInvoice(GenerateCompanyInvoiceRequest request);
-    Result<IsotainerTankInvoiceResponse>  GenerateIsotainerTankInvoice(GenerateIsotainerTankInvoiceRequest request);
-    Result<InvoiceListResponse>  GetInvoices(InvoiceListRequest request);
+    Task<Result<CompanyInvoiceResponse>> GenerateCompanyInvoice(GenerateCompanyInvoiceRequest request);
+    Task<Result<IsotainerTankInvoiceResponse>> GenerateIsotainerTankInvoice(GenerateIsotainerTankInvoiceRequest request);
+    Task<Result<InvoiceListResponse>> GetInvoices(InvoiceListRequest request);
 }

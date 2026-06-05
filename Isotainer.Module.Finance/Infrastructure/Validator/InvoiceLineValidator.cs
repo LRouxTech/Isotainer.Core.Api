@@ -10,7 +10,7 @@ public class InvoiceLineValidator : IInvoiceLineValidator
 {
     public Result<bool> ValidateInvoiceLineListRequest(InvoiceLineListRequest request)
     {
-        if (request.IsotainerTankId == Guid.Empty)
+        if (request.InvoiceId == Guid.Empty)
         {
             return TankErrors.TankNotFound;
         }
