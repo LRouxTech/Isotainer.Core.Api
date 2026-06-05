@@ -5,5 +5,5 @@ namespace Isotainer.Module.Tank.Core.Interfaces.Services;
 
 public interface IWashStatusService
 {
-    Result<WashStatusListResponse> GetWashStatuses();
+    Task<Result<WashStatusListResponse>> GetWashStatuses();
 }

@@ -5,10 +5,10 @@ namespace Isotainer.Module.Tank.Core.Interfaces.Services;
 
 public interface IIsotainerTankService
 {
-    Result<IsotainerTankResponse> CreateIsotainerTank(CreateIsotainerTankRequest request);
-    Result<IsotainerTankResponse> UpdateIsotainerTank(UpdateIsotainerTankRequest request);
-    Result<IsotainerTankListResponse> GetIsotainerTanks();
-    Result<bool> ArchiveIsotainerTank(ArchiveIsotainerRequest request);
-    Result<IsotainerTankResponse> ChangeWashStatus(ChangeWashStatusRequest request);
-    Result<IsotainerTankResponse> UnloadTank(UnloadTankRequest request);
+    Task<Result<IsotainerTankResponse>> CreateIsotainerTank(CreateIsotainerTankRequest request);
+    Task<Result<IsotainerTankResponse>> UpdateIsotainerTank(UpdateIsotainerTankRequest request);
+    Task<Result<IsotainerTankListResponse>> GetIsotainerTanks();
+    Task<Result<bool>> ArchiveIsotainerTank(ArchiveIsotainerRequest request);
+    Task<Result<IsotainerTankResponse>> ChangeWashStatus(ChangeWashStatusRequest request);
+    Task<Result<IsotainerTankResponse>> UnloadTank(UnloadTankRequest request);
 }

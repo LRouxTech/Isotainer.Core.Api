@@ -16,6 +16,9 @@ public static class IsotainerTankConfiguration
             .IsRequired()
             .HasMaxLength(50);
         
+        builder.HasIndex()
+            .IsUnique();
+        
         builder.Property(u => u.WashStatusId)
             .IsRequired();
 

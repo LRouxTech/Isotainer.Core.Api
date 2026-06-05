@@ -15,6 +15,9 @@ public static class CompanyConfiguration
         builder.Property(u => u.Name)
             .IsRequired()
             .HasMaxLength(200);
+        
+        builder.HasIndex(u => u.Name)
+            .IsUnique();
 
         return builder;
     }

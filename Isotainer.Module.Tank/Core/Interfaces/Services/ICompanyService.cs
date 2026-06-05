@@ -5,8 +5,8 @@ namespace Isotainer.Module.Tank.Core.Interfaces.Services;
 
 public interface ICompanyService
 {
-    Result<CompanyResponse> CreateCompany(CreateCompanyRequest request);
-    Result<CompanyResponse> UpdateCompany(UpdateCompanyRequest request);
-    Result<CompanyListResponse> GetCompanyList();
-    Result<bool> ArchiveCompany(ArchiveCompanyRequest request);
+    Task<Result<CompanyResponse>> CreateCompany(CreateCompanyRequest request);
+    Task<Result<CompanyResponse>> UpdateCompany(UpdateCompanyRequest request);
+    Task<Result<CompanyListResponse>> GetCompanyList();
+    Task<Result<bool>> ArchiveCompany(ArchiveCompanyRequest request);
 }

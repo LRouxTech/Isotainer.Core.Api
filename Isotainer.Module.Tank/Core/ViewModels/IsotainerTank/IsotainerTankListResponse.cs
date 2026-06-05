@@ -2,4 +2,4 @@
 
 public record IsotainerTankListResponse(List<IsotainerTankItem> IsotainerTankItems);
 
-public class IsotainerTankItem(Guid IsotainerTankId, string TankNumber, Guid  CompanyId, Guid WashStatusId);
+public class IsotainerTankItem(Guid IsotainerTankId, string TankNumber, Guid  CompanyId, Guid WashStatusId, DateTime LoadedOn, DateTime? UnloadedOn);

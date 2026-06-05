@@ -1,38 +1,146 @@
-﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
+﻿using Isotainer.Module.Tank.Core.Entities;
+using Isotainer.Module.Tank.Core.Interfaces.Services;
+using Isotainer.Module.Tank.Core.Interfaces.Validators;
 using Isotainer.Module.Tank.Core.ViewModels.IsotainerTank;
+using Isotainer.Module.Tank.Infrastructure.Database;
+using Isotainer.Module.Tank.Infrastructure.Errors;
 using LRouxTech.Core.ValidationResult;
+using Microsoft.EntityFrameworkCore;
 
 namespace Isotainer.Module.Tank.Infrastructure.Services;
 
-public class IsotainerTankService : IIsotainerTankService
+public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsotainerTankValidator tankValidator) : IIsotainerTankService
 {
-    public Result<IsotainerTankResponse> CreateIsotainerTank(CreateIsotainerTankRequest request)
+    public async Task<Result<IsotainerTankResponse>> CreateIsotainerTank(CreateIsotainerTankRequest request)
     {
-        throw new NotImplementedException();
+        var validation = tankValidator.ValidateCreateRequest(request);
+        if (validation.IsFailure)
+        {
+            return validation.Error;
+        }
+        
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        if (await tankContext.IsotainerTanks.AnyAsync(x => x.TankNumber == request.TankNumber))
+        {
+            return IsotainerTankErrors.NotUnique;
+        }
+
+        var washStatus = await tankContext.WashStatus.FirstOrDefaultAsync(x => x.Type == WashStatusEnum.New);
+        if (washStatus == null)
+        {
+            return WashStatusErrors.NotFound;
+        }
+
+        var newTank = new IsotainerTank
+        {
+            TankNumber = request.TankNumber,
+            CompanyId = request.CompanyId,
+            LoadedOn = DateTime.UtcNow,
+            WashStatusId = washStatus.Id
+        }.Create();
+        
+        await tankContext.IsotainerTanks.AddAsync(newTank);
+        await tankContext.SaveChangesAsync();
+        
+        return new IsotainerTankResponse(newTank.Id, newTank.TankNumber, newTank.WashStatusId, newTank.CompanyId, newTank.LoadedOn);
     }
 
-    public Result<IsotainerTankResponse> UpdateIsotainerTank(UpdateIsotainerTankRequest request)
+    public async Task<Result<IsotainerTankResponse>> UpdateIsotainerTank(UpdateIsotainerTankRequest request)
     {
-        throw new NotImplementedException();
+        var validation = tankValidator.ValidateUpdateRequest(request);
+        if (validation.IsFailure)
+        {
+            return validation.Error;
+        }
+        
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        if (await tankContext.IsotainerTanks.AnyAsync(x => x.TankNumber == request.TankNumber && x.Id != request.CompanyId))
+        {
+            return IsotainerTankErrors.NotUnique;
+        }
+        
+        var tank = await tankContext.IsotainerTanks.FindAsync(request.IsotainerTankId);
+        
+        if (tank == null)
+        {
+            return IsotainerTankErrors.NotFound;
+        }
+        
+        tank.TankNumber = request.TankNumber;
+        tank.CompanyId = request.CompanyId;
+        
+        tankContext.IsotainerTanks.Update(tank);
+        await tankContext.SaveChangesAsync();
+        
+        return new IsotainerTankResponse(tank.Id, tank.TankNumber, tank.WashStatusId, tank.CompanyId, tank.LoadedOn);
     }
 
-    public Result<IsotainerTankListResponse> GetIsotainerTanks()
+    public async Task<Result<IsotainerTankListResponse>> GetIsotainerTanks()
     {
-        throw new NotImplementedException();
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        var tanks = tankContext.IsotainerTanks
+            .Select(x => new IsotainerTankItem(x.Id, x.TankNumber, x.CompanyId, x.WashStatusId, x.LoadedOn, x.UnloadedOn))
+            .ToList();
+        
+        return new IsotainerTankListResponse(tanks);
     }
 
-    public Result<bool> ArchiveIsotainerTank(ArchiveIsotainerRequest request)
+    public async Task<Result<bool>> ArchiveIsotainerTank(ArchiveIsotainerRequest request)
     {
-        throw new NotImplementedException();
+        var validation = tankValidator.ValidateArchiveRequest(request);
+        if (validation.IsFailure)
+        {
+            return validation.Error;
+        }
+        
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+
+        var tank = await tankContext.IsotainerTanks.FindAsync(request.IsotainerTankId);
+
+        if (tank == null)
+        {
+            return IsotainerTankErrors.NotFound;
+        }
+
+        tank.Archive();
+
+        return true;
     }
 
-    public Result<IsotainerTankResponse> ChangeWashStatus(ChangeWashStatusRequest request)
+    public async Task<Result<IsotainerTankResponse>> ChangeWashStatus(ChangeWashStatusRequest request)
     {
-        throw new NotImplementedException();
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        var tank = await tankContext.IsotainerTanks.FindAsync(request.IsotainerTankId);
+
+        if (tank == null)
+        {
+            return IsotainerTankErrors.NotFound;
+        }
+        
+        tank.WashStatusId = request.WashStatusId;
+        tank.Update();
+        await tankContext.IsotainerTanks.AddAsync(tank);
+        await tankContext.SaveChangesAsync();
+        
+        return new IsotainerTankResponse(tank.Id, tank.TankNumber, tank.WashStatusId, tank.CompanyId, tank.LoadedOn);
     }
 
-    public Result<IsotainerTankResponse> UnloadTank(UnloadTankRequest request)
+    public async Task<Result<IsotainerTankResponse>> UnloadTank(UnloadTankRequest request)
     {
-        throw new NotImplementedException();
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        var tank = await tankContext.IsotainerTanks.FindAsync(request.IsotainerTankId);
+
+        if (tank == null)
+        {
+            return IsotainerTankErrors.NotFound;
+        }
+        
+        tank.UnloadedOn = DateTime.UtcNow;
+        tank.Update();
+        await tankContext.IsotainerTanks.AddAsync(tank);
+        await tankContext.SaveChangesAsync();
+        
+        return new IsotainerTankResponse(tank.Id, tank.TankNumber, tank.WashStatusId, tank.CompanyId, tank.LoadedOn);
+
     }
 }
