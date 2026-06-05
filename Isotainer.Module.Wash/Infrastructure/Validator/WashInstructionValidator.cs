@@ -30,11 +30,6 @@ public class WashInstructionValidator : IWashInstructionValidator
 
     public Result<bool> ValidateUpdateInstruction(UpdateWashInstructionRequest request)
     {
-        if (request.WashInstructionId == Guid.Empty)
-        {
-            return WashInstructionErrors.NotFound;
-        }
-        
         if (request.IsotainerTankId == Guid.Empty)
         {
             return WashInstructionErrors.TankNotFound;
@@ -48,16 +43,6 @@ public class WashInstructionValidator : IWashInstructionValidator
         if (request.InstructedOn <= DateTime.UtcNow)
         {
             return WashInstructionErrors.InvalidInstructedOnDate;
-        }
-        
-        return true;
-    }
-
-    public Result<bool> ValidateArchiveInstruction(ArchiveWashInstructionRequest request)
-    {
-        if (request.WashInstructionId == Guid.Empty)
-        {
-            return WashInstructionErrors.NotFound;
         }
         
         return true;

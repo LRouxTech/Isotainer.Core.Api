@@ -7,5 +7,4 @@ public interface IWashInstructionValidator
 {
     Result<bool> ValidateCreateInstruction(CreateWashInstructionRequest request);
     Result<bool> ValidateUpdateInstruction(UpdateWashInstructionRequest request);
-    Result<bool> ValidateArchiveInstruction(ArchiveWashInstructionRequest request);
 }

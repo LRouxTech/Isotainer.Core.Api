@@ -45,7 +45,7 @@ public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsota
         return new IsotainerTankResponse(newTank.Id, newTank.TankNumber, newTank.WashStatusId, newTank.CompanyId, newTank.LoadedOn);
     }
 
-    public async Task<Result<IsotainerTankResponse>> UpdateIsotainerTank(UpdateIsotainerTankRequest request)
+    public async Task<Result<IsotainerTankResponse>> UpdateIsotainerTank(Guid isotainerTankId, UpdateIsotainerTankRequest request)
     {
         var validation = tankValidator.ValidateUpdateRequest(request);
         if (validation.IsFailure)
@@ -59,7 +59,7 @@ public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsota
             return IsotainerTankErrors.NotUnique;
         }
         
-        var tank = await tankContext.IsotainerTanks.FindAsync(request.IsotainerTankId);
+        var tank = await tankContext.IsotainerTanks.FindAsync(isotainerTankId);
         
         if (tank == null)
         {
@@ -85,17 +85,11 @@ public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsota
         return new IsotainerTankListResponse(tanks);
     }
 
-    public async Task<Result<bool>> ArchiveIsotainerTank(ArchiveIsotainerRequest request)
+    public async Task<Result<bool>> ArchiveIsotainerTank(Guid isotainerTankId)
     {
-        var validation = tankValidator.ValidateArchiveRequest(request);
-        if (validation.IsFailure)
-        {
-            return validation.Error;
-        }
-        
         await using var tankContext = await dbContextFactory.CreateDbContextAsync();
 
-        var tank = await tankContext.IsotainerTanks.FindAsync(request.IsotainerTankId);
+        var tank = await tankContext.IsotainerTanks.FindAsync(isotainerTankId);
 
         if (tank == null)
         {
@@ -107,10 +101,10 @@ public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsota
         return true;
     }
 
-    public async Task<Result<IsotainerTankResponse>> ChangeWashStatus(ChangeWashStatusRequest request)
+    public async Task<Result<IsotainerTankResponse>> ChangeWashStatus(Guid isotainerTankId, ChangeWashStatusRequest request)
     {
         await using var tankContext = await dbContextFactory.CreateDbContextAsync();
-        var tank = await tankContext.IsotainerTanks.FindAsync(request.IsotainerTankId);
+        var tank = await tankContext.IsotainerTanks.FindAsync(isotainerTankId);
 
         if (tank == null)
         {
@@ -125,10 +119,10 @@ public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsota
         return new IsotainerTankResponse(tank.Id, tank.TankNumber, tank.WashStatusId, tank.CompanyId, tank.LoadedOn);
     }
 
-    public async Task<Result<IsotainerTankResponse>> UnloadTank(UnloadTankRequest request)
+    public async Task<Result<IsotainerTankResponse>> UnloadTank(Guid isotainerTankId)
     {
         await using var tankContext = await dbContextFactory.CreateDbContextAsync();
-        var tank = await tankContext.IsotainerTanks.FindAsync(request.IsotainerTankId);
+        var tank = await tankContext.IsotainerTanks.FindAsync(isotainerTankId);
 
         if (tank == null)
         {

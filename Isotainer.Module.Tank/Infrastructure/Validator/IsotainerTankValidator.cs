@@ -24,11 +24,6 @@ public class IsotainerTankValidator : IIsotainerTankValidator
 
     public Result<bool> ValidateUpdateRequest(UpdateIsotainerTankRequest request)
     {
-        if (request.IsotainerTankId != Guid.Empty)
-        {
-            return IsotainerTankErrors.NotFound;
-        }
-        
         if (request.CompanyId != Guid.Empty)
         {
             return CompanyErrors.NotFound;

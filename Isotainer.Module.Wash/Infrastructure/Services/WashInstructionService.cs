@@ -34,7 +34,7 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         return new WashInstructionResponse(newWashInstruction.Id, newWashInstruction.IsotainerTankId, newWashInstruction.WashTypeId, newWashInstruction.InstructedOn);
     }
 
-    public  async Task<Result<WashInstructionResponse>> UpdateWashInstruction(UpdateWashInstructionRequest request)
+    public  async Task<Result<WashInstructionResponse>> UpdateWashInstruction(Guid washInstructionId, UpdateWashInstructionRequest request)
     {
         var validation = washInstructionValidator.ValidateUpdateInstruction(request);
         if (validation.IsFailure)
@@ -62,30 +62,24 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         return new WashInstructionResponse(washInstruction.Id, washInstruction.IsotainerTankId, washInstruction.WashTypeId, washInstruction.InstructedOn);
     }
 
-    public  async Task<Result<WashInstructionsListResponse>> GetWashInstructions(WashInstructionListRequest request)
+    public  async Task<Result<WashInstructionsListResponse>> GetWashInstructions(Guid washTypeId)
     {
         await using var washContext = await dbContextFactory.CreateDbContextAsync();
         var washTypes = await washContext.WashTypes.ToListAsync();
         
         var washInstructions = await washContext.WashInstructions
-            .Where(x => x.WashTypeId == request.WashTypeId)
+            .Where(x => x.WashTypeId == washTypeId)
             .Select(x => new WashInstructionItem(x.Id, x.IsotainerTankId, x.WashTypeId, x.InstructedOn ))
             .ToListAsync();
 
         return new WashInstructionsListResponse(washInstructions);
     }
 
-    public  async Task<Result<bool>> ArchiveWashInstruction(ArchiveWashInstructionRequest request)
+    public  async Task<Result<bool>> ArchiveWashInstruction(Guid washInstructionId)
     {
-        var validation = washInstructionValidator.ValidateArchiveInstruction(request);
-        if (validation.IsFailure)
-        {
-            return validation.Error;
-        }
-        
         await using var washContext = await dbContextFactory.CreateDbContextAsync();
 
-        var washInstruction = await washContext.WashInstructions.FindAsync(request.WashInstructionId);
+        var washInstruction = await washContext.WashInstructions.FindAsync(washInstructionId);
 
         if (washInstruction == null)
         {

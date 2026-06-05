@@ -37,7 +37,7 @@ public class CompanyService(ITankDbContextFactory dbContextFactory, ICompanyVali
         return new CompanyResponse(newCompany.Id, newCompany.Name);
     }
 
-    public async Task<Result<CompanyResponse>> UpdateCompany(UpdateCompanyRequest request)
+    public async Task<Result<CompanyResponse>> UpdateCompany(Guid companyId, UpdateCompanyRequest request)
     {
         var validation = companyValidator.ValidateUpdateRequest(request);
         if (validation.IsFailure)
@@ -46,12 +46,12 @@ public class CompanyService(ITankDbContextFactory dbContextFactory, ICompanyVali
         }
 
         await using var tankContext = await dbContextFactory.CreateDbContextAsync();
-        if (await tankContext.Companies.AnyAsync(x => x.Name == request.Name && x.Id != request.CompanyId))
+        if (await tankContext.Companies.AnyAsync(x => x.Name == request.Name && x.Id != companyId))
         {
             return CompanyErrors.NotUnique;
         }
         
-        var company = await tankContext.Companies.FindAsync(request.CompanyId);
+        var company = await tankContext.Companies.FindAsync(companyId);
 
         if (company == null)
         {
@@ -76,17 +76,11 @@ public class CompanyService(ITankDbContextFactory dbContextFactory, ICompanyVali
         return new CompanyListResponse(companies);
     }
 
-    public async Task<Result<bool>> ArchiveCompany(ArchiveCompanyRequest request)
+    public async Task<Result<bool>> ArchiveCompany(Guid companyId)
     {
-        var validation = companyValidator.ValidateArchiveRequest(request);
-        if (validation.IsFailure)
-        {
-            return validation.Error;
-        }
-        
         await using var tankContext = await dbContextFactory.CreateDbContextAsync();
 
-        var company = await tankContext.Companies.FindAsync(request.CompanyId);
+        var company = await tankContext.Companies.FindAsync(companyId);
 
         if (company == null)
         {

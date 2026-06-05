@@ -25,21 +25,6 @@ public class CompanyValidator : ICompanyValidator
             return CompanyErrors.EmptyName;
         }
         
-        if (request.CompanyId == Guid.Empty)
-        {
-            return CompanyErrors.NotFound;
-        }
-        
-        return true;
-    }
-
-    public Result<bool> ValidateArchiveRequest(ArchiveCompanyRequest request)
-    {
-        if (request.CompanyId == Guid.Empty)
-        {
-            return CompanyErrors.NotFound;
-        }
-        
         return true;
     }
 }

@@ -7,5 +7,4 @@ public interface ICompanyValidator
 {
     Result<bool> ValidateCreateRequest(CreateCompanyRequest request);
     Result<bool> ValidateUpdateRequest(UpdateCompanyRequest request);
-    Result<bool> ValidateArchiveRequest(ArchiveCompanyRequest request);
 }

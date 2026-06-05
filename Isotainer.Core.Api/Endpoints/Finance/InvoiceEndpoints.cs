@@ -13,9 +13,9 @@ public static class InvoiceEndpoints
         var group = endpoints.MapGroup(prefix)
             .WithTags("Invoice");
         
-        group.MapGet("/tank/{TankId:guid}/", async (Guid TankId, [FromServices] IInvoiceService generalCostService) =>
+        group.MapGet("/tank/{TankId:guid}/", async (Guid TankId, [FromServices] IInvoiceService invoiceService) =>
             {
-                var result = await generalCostService.GetInvoices(TankId);
+                var result = await invoiceService.GetInvoices(TankId);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
@@ -28,9 +28,9 @@ public static class InvoiceEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapGet("/company/{CompanyId:guid}/", async (Guid companyId, [FromServices] IInvoiceService generalCostService) =>
+        group.MapGet("/company/{CompanyId:guid}/", async (Guid companyId, [FromServices] IInvoiceService invoiceService) =>
             {
-                var result = await generalCostService.GetInvoices(companyId);
+                var result = await invoiceService.GetInvoices(companyId);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
@@ -45,9 +45,9 @@ public static class InvoiceEndpoints
 
         group.MapPut("/tank/{TankId:guid}",
                 async (Guid tankId,
-                    [FromServices] IInvoiceService generalCostService) =>
+                    [FromServices] IInvoiceService invoiceService) =>
                 {
-                    var result = await generalCostService.GenerateIsotainerTankInvoice(tankId);
+                    var result = await invoiceService.GenerateIsotainerTankInvoice(tankId);
                     if (result.IsFailure)
                     {
                         return Results.BadRequest(result.Error);
@@ -61,9 +61,9 @@ public static class InvoiceEndpoints
         
         group.MapPut("/company/{CompanyId:guid}",
                 async (Guid companyId,
-                    [FromServices] IInvoiceService generalCostService) =>
+                    [FromServices] IInvoiceService invoiceService) =>
                 {
-                    var result = await generalCostService.GenerateCompanyInvoice(companyId);
+                    var result = await invoiceService.GenerateCompanyInvoice(companyId);
                     if (result.IsFailure)
                     {
                         return Results.BadRequest(result.Error);

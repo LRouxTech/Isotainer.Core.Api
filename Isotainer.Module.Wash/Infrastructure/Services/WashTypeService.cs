@@ -37,7 +37,7 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
         return new WashTypeResponse(newWashType.Id, newWashType.Type, newWashType.Cost);
     }
 
-    public async Task<Result<WashTypeResponse>> UpdateWashType(UpdateWashTypeRequest request)
+    public async Task<Result<WashTypeResponse>> UpdateWashType(Guid washTypeId, UpdateWashTypeRequest request)
     {
         var validation = washTypeValidator.ValidateUpdateWashType(request);
         if (validation.IsFailure)
@@ -46,12 +46,12 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
         }
         
         await using var washContext = await dbContextFactory.CreateDbContextAsync();
-        if (await washContext.WashTypes.AnyAsync(x => x.Type == request.Type && x.Id != request.WashTypeId))
+        if (await washContext.WashTypes.AnyAsync(x => x.Type == request.Type && x.Id != washTypeId))
         {
             return WashTypeErrors.NotUnique;
         }
         
-        var washType = await washContext.WashTypes.FindAsync(request.WashTypeId);
+        var washType = await washContext.WashTypes.FindAsync(washTypeId);
 
         if (washType == null)
         {
@@ -69,7 +69,7 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
     }
     
 
-    public async Task<Result<WashTypeListResponse>> ListWashTypes()
+    public async Task<Result<WashTypeListResponse>> GetWashTypes()
     {
         await using var washContext = await dbContextFactory.CreateDbContextAsync();
         var washTypes = await washContext.WashTypes
@@ -79,17 +79,11 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
         return new  WashTypeListResponse(washTypes);
     }
 
-    public async Task<Result<bool>> ArchiveWashType(ArchiveWashTypeRequest request)
+    public async Task<Result<bool>> ArchiveWashType(Guid washTypeId)
     {
-        var validation = washTypeValidator.ValidateArchiveWashType(request);
-        if (validation.IsFailure)
-        {
-            return validation.Error;
-        }
-        
         await using var washContext = await dbContextFactory.CreateDbContextAsync();
 
-        var washType = await washContext.WashTypes.FindAsync(request.WashTypeId);
+        var washType = await washContext.WashTypes.FindAsync(washTypeId);
 
         if (washType == null)
         {

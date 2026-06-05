@@ -1,6 +1,77 @@
-﻿namespace Isotainer.Core.Api.Endpoints.Tank;
+﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
+using Isotainer.Module.Tank.Core.ViewModels.Company;
+using Microsoft.AspNetCore.Mvc;
 
-public class CompanyEndpoints
+namespace Isotainer.Core.Api.Endpoints.Tank;
+
+public static class CompanyEndpoints
 {
-    
+    public static IEndpointRouteBuilder MapCompanyEndpoints(this IEndpointRouteBuilder endpoints,
+        string prefix = "/api/tank/company")
+    {
+        var group = endpoints.MapGroup(prefix)
+            .WithTags("Company");
+        
+        group.MapGet("/", async ([FromServices] ICompanyService companyService) =>
+            {
+                var result = await companyService.GetCompanyList();
+                if (result.IsFailure)
+                {
+                    return Results.BadRequest(result.Error);
+                }
+
+                return Results.Ok(result.Value);
+
+            })
+            .WithName("GetCompanies")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest);
+        
+        group.MapPost("/", async ([FromBody] CreateCompanyRequest createCompanyRequest, [FromServices] ICompanyService companyService) =>
+            {
+                var result = await companyService.CreateCompany(createCompanyRequest);
+                if (result.IsFailure)
+                {
+                    return Results.BadRequest(result.Error);
+                }
+
+                return Results.Ok(result.Value);
+
+            })
+            .WithName("CreateCompany")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest);
+        
+        group.MapPut("/{CompanyId:guid}", async (Guid companyId, [FromBody] UpdateCompanyRequest createCompanyRequest, [FromServices] ICompanyService companyService) =>
+            {
+                var result = await companyService.UpdateCompany(companyId, createCompanyRequest);
+                if (result.IsFailure)
+                {
+                    return Results.BadRequest(result.Error);
+                }
+
+                return Results.Ok(result.Value);
+
+            })
+            .WithName("UpdateCompany")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest);
+        
+        group.MapDelete("/{InvoiceId:guid}/", async (Guid invoiceId, [FromServices] ICompanyService companyService) =>
+            {
+                var result = await companyService.ArchiveCompany(invoiceId);
+                if (result.IsFailure)
+                {
+                    return Results.BadRequest(result.Error);
+                }
+
+                return Results.Ok(result.Value);
+
+            })
+            .WithName("ArchiveCompany")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest);
+
+        return endpoints;
+    }
 }
