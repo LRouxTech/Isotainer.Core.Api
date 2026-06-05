@@ -42,7 +42,7 @@ public class IsotainerTankValidator : IIsotainerTankValidator
         return true;
     }
 
-    public Result<bool> ValidateChangeIsotainerWashStatus(ChangeIsotainerWashStatus request)
+    public Result<bool> ValidateChangeIsotainerWashStatus(ChangeWashStatusRequest request)
     {
         if (request.IsotainerTankId != Guid.Empty)
         {

@@ -7,7 +7,7 @@ public interface IIsotainerTankValidator
 {
     Result<bool> ValidateCreateRequest(CreateIsotainerTankRequest request);
     Result<bool> ValidateUpdateRequest(UpdateIsotainerTankRequest request);
-    Result<bool> ValidateChangeIsotainerWashStatus(ChangeIsotainerWashStatus request);
+    Result<bool> ValidateChangeIsotainerWashStatus(ChangeWashStatusRequest request);
     Result<bool> ValidateUnloadTankRequest(UnloadTankRequest request);
     Result<bool> ValidateArchiveRequest(ArchiveIsotainerRequest request);
 }
