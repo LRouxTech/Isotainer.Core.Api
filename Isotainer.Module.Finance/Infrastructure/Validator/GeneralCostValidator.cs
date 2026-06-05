@@ -1,4 +1,5 @@
 ﻿using Isotainer.Module.Finance.Core.Interfaces;
+using Isotainer.Module.Finance.Core.Interfaces.Validators;
 using Isotainer.Module.Finance.Core.ViewModels.GeneralCost;
 using Isotainer.Module.Finance.Infrastructure.Errors;
 using LRouxTech.Core.ValidationResult;

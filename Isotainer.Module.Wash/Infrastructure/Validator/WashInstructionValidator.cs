@@ -1,4 +1,5 @@
 ﻿using Isotainer.Module.Wash.Core.Interfaces;
+using Isotainer.Module.Wash.Core.Interfaces.Validators;
 using Isotainer.Module.Wash.Core.ViewModels.WashInstruction;
 using Isotainer.Module.Wash.Infrastructure.Errors;
 using LRouxTech.Core.ValidationResult;

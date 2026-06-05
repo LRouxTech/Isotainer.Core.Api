@@ -1,7 +1,7 @@
 ﻿using Isotainer.Module.Wash.Core.ViewModels.WashInstruction;
 using LRouxTech.Core.ValidationResult;
 
-namespace Isotainer.Module.Wash.Core.Interfaces;
+namespace Isotainer.Module.Wash.Core.Interfaces.Validators;
 
 public interface IWashInstructionValidator
 {

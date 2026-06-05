@@ -1,4 +1,5 @@
 ﻿using Isotainer.Module.Tank.Core.Interfaces;
+using Isotainer.Module.Tank.Core.Interfaces.Validators;
 using Isotainer.Module.Tank.Core.ViewModels.Company;
 using Isotainer.Module.Tank.Infrastructure.Errors;
 using LRouxTech.Core.ValidationResult;

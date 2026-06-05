@@ -1,7 +1,7 @@
 ﻿using Isotainer.Module.Tank.Core.ViewModels.IsotainerTank;
 using LRouxTech.Core.ValidationResult;
 
-namespace Isotainer.Module.Tank.Core.Interfaces;
+namespace Isotainer.Module.Tank.Core.Interfaces.Validators;
 
 public interface IIsotainerTankValidator
 {

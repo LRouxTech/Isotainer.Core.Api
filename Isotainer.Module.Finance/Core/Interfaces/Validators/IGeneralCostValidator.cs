@@ -1,7 +1,7 @@
 ﻿using Isotainer.Module.Finance.Core.ViewModels.GeneralCost;
 using LRouxTech.Core.ValidationResult;
 
-namespace Isotainer.Module.Finance.Core.Interfaces;
+namespace Isotainer.Module.Finance.Core.Interfaces.Validators;
 
 public interface IGeneralCostValidator
 {

@@ -1,4 +1,5 @@
 ﻿using Isotainer.Module.Finance.Core.Interfaces;
+using Isotainer.Module.Finance.Core.Interfaces.Validators;
 using Isotainer.Module.Finance.Core.ViewModels.Invoice;
 using Isotainer.Module.Finance.Core.ViewModels.InvoiceLine;
 using Isotainer.Module.Finance.Infrastructure.Errors;
