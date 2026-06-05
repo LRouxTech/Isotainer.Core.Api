@@ -12,4 +12,16 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Isotainer.Module.Finance\Isotainer.Module.Finance.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Isotainer.Module.Tank\Isotainer.Module.Tank.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Isotainer.Module.Wash\Isotainer.Module.Wash.csproj" />
+    </ItemGroup>
+
 </Project>
