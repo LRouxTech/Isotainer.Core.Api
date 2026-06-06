@@ -44,7 +44,7 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         
         await using var washContext = await dbContextFactory.CreateDbContextAsync();
         
-        var washInstruction = await washContext.WashInstructions.FindAsync(request.WashInstructionId);
+        var washInstruction = await washContext.WashInstructions.FindAsync(washInstructionId);
 
         if (washInstruction == null)
         {
@@ -62,17 +62,30 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         return new WashInstructionResponse(washInstruction.Id, washInstruction.IsotainerTankId, washInstruction.WashTypeId, washInstruction.InstructedOn);
     }
 
-    public  async Task<Result<WashInstructionsListResponse>> GetWashInstructions(Guid washTypeId)
+    public  async Task<Result<WashInstructionsListResponse>> GetWashInstructions(bool isFinished, Guid? isotainerTankId)
     {
         await using var washContext = await dbContextFactory.CreateDbContextAsync();
-        var washTypes = await washContext.WashTypes.ToListAsync();
         
         var washInstructions = await washContext.WashInstructions
-            .Where(x => x.WashTypeId == washTypeId)
-            .Select(x => new WashInstructionItem(x.Id, x.IsotainerTankId, x.WashTypeId, x.InstructedOn ))
+            .Where(x => isFinished ? x.FinishedOn != null : x.FinishedOn == null)
+            .Where(x => isotainerTankId == null  || x.IsotainerTankId == isotainerTankId)
+            .Select(x => new WashInstructionItem(x.Id, x.IsotainerTankId, "", x.WashTypeId, x.WashType.Type,  x.InstructedOn ))
             .ToListAsync();
 
         return new WashInstructionsListResponse(washInstructions);
+    }
+
+    public async Task<Result<List<CompletedWashInstructions>>> GetCompletedWashInstructions(Guid isotainerTankId, DateTime? from)
+    {
+        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        
+        var washInstructions = await washContext.WashInstructions
+            .Where(x => x.FinishedOn != null && x.FinishedOn > from)
+            .Where(x => x.IsotainerTankId == isotainerTankId)
+            .Select(x => new CompletedWashInstructions(x.Id, x.IsotainerTankId, x.WashType.Type, x.WashType.Cost, x.FinishedOn.Value ))
+            .ToListAsync();
+
+        return washInstructions;
     }
 
     public  async Task<Result<bool>> ArchiveWashInstruction(Guid washInstructionId)

@@ -10,4 +10,6 @@ public class GeneralCost : BaseModel<GeneralCost>
 
 public enum GeneralCostEnum {
     Storage = 1,
+    Liftin = 2,
+    Liftout = 3,
 }

@@ -84,6 +84,30 @@ public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsota
         
         return new IsotainerTankListResponse(tanks);
     }
+    
+    public async Task<Result<Dictionary<Guid, string>>> GetIsotainerTanks(List<Guid> ids)
+    {
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        var tanks = await tankContext.IsotainerTanks
+            .Where(x => ids.Contains(x.Id))
+            .ToDictionaryAsync(x => x.Id, x => x.TankNumber);
+        
+        return tanks;
+    }
+    
+    public async Task<Result<IsotainerTank>> GetIsotainerTankDetails(Guid id)
+    {
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        var tank = await tankContext.IsotainerTanks
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (tank == null)
+        {
+            return  IsotainerTankErrors.NotFound;
+        }
+        
+        return tank;
+    }
 
     public async Task<Result<bool>> ArchiveIsotainerTank(Guid isotainerTankId)
     {

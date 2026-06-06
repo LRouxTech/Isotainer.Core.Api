@@ -2,4 +2,4 @@
 
 public record WashInstructionsListResponse(List<WashInstructionItem> WashInstructions);
 
-public class WashInstructionItem(Guid WashInstructionId, Guid IsotainerTankId, Guid WashTypeId, DateTime InstructedOn);
+public record WashInstructionItem(Guid WashInstructionId, Guid IsotainerTankId, string TankNumber, Guid WashTypeId, string Wash, DateTime InstructedOn);

@@ -1,6 +1,9 @@
 ﻿using Isotainer.Module.Finance.Core.Interfaces.Services;
 using Isotainer.Module.Finance.Core.ViewModels.GeneralCost;
 using Isotainer.Module.Finance.Core.ViewModels.Invoice;
+using Isotainer.Module.Tank.Core.Entities;
+using Isotainer.Module.Tank.Infrastructure.Services;
+using Isotainer.Module.Wash.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Finance;
@@ -45,9 +48,54 @@ public static class InvoiceEndpoints
 
         group.MapPut("/tank/{TankId:guid}",
                 async (Guid tankId,
-                    [FromServices] IInvoiceService invoiceService) =>
+                    [FromServices] IInvoiceService invoiceService,
+                    [FromServices] IWashInstructionService washInstructionService,
+                    [FromServices] IsotainerTankService tankService
+                    ) =>
                 {
-                    var result = await invoiceService.GenerateIsotainerTankInvoice(tankId);
+                    var invoiceResult = await invoiceService.GetInvoices(tankId);
+                    
+                    if (invoiceResult.IsFailure)
+                    {
+                        return Results.BadRequest(invoiceResult.Error);
+                    }
+
+                    var invoiceItems = invoiceResult.Value.InvoiceItems;
+                    var maxInvoiceDate = invoiceItems?.Max(x => x.InvoicedOn);
+                    
+                    // Get the tank details
+                    var tankResult = await tankService.GetIsotainerTankDetails(tankId);
+
+                    if (tankResult.IsFailure)
+                    {
+                        return Results.BadRequest(tankResult.Error);
+                    }
+
+                    var tank = tankResult.Value;
+
+                    var lastInvoice = invoiceItems is null or []
+                        ? tank.LoadedOn.AddDays(-1)
+                        : maxInvoiceDate;
+
+                    var washInstructionResult = await washInstructionService.GetCompletedWashInstructions(tankId, lastInvoice);
+                    
+                    if (washInstructionResult.IsFailure)
+                    {
+                        return Results.BadRequest(washInstructionResult.Error);
+                    }
+
+                    var washInstructions = washInstructionResult.Value;
+                    
+                    var result = await invoiceService.GenerateIsotainerTankInvoice(
+                        new GenerateIsotainerInvoiceRequest(
+                            tank.Id, 
+                            tank.CompanyId,
+                            tank.LoadedOn, 
+                            tank.UnloadedOn,
+                            maxInvoiceDate,
+                            washInstructions.Select(x => new WashItems(x.wash, x.cost, x.washedOn)).ToList()
+                            ));
+                    
                     if (result.IsFailure)
                     {
                         return Results.BadRequest(result.Error);
@@ -58,22 +106,7 @@ public static class InvoiceEndpoints
             .WithName("GenerateTankInvoice")
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
-        
-        group.MapPut("/company/{CompanyId:guid}",
-                async (Guid companyId,
-                    [FromServices] IInvoiceService invoiceService) =>
-                {
-                    var result = await invoiceService.GenerateCompanyInvoice(companyId);
-                    if (result.IsFailure)
-                    {
-                        return Results.BadRequest(result.Error);
-                    }
-
-                    return Results.Ok(result.Value);
-                })
-            .WithName("GenerateTankInvoice")
-            .Produces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest);
+  
 
         return endpoints;
     }

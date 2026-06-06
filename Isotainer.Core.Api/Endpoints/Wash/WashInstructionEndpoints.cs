@@ -1,4 +1,5 @@
-﻿using Isotainer.Module.Wash.Core.Interfaces.Services;
+﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
+using Isotainer.Module.Wash.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.ViewModels.WashInstruction;
 using Isotainer.Module.Wash.Core.ViewModels.WashType;
 using Microsoft.AspNetCore.Mvc;
@@ -13,21 +14,30 @@ public static class WashInstructionEndpoints
         var group = endpoints.MapGroup(prefix)
             .WithTags("WashInstructions");
         
-        group.MapGet("/", async ([FromQuery] Guid washInstructionId, [FromServices] IWashInstructionService washInstructionService) =>
+        group.MapGet("/", async ([FromQuery] bool isFinished, [FromServices] IWashInstructionService washInstructionService, [FromServices] IIsotainerTankService tankService) =>
             {
-                var result = await washInstructionService.GetWashInstructions(washInstructionId);
+                var result = await washInstructionService.GetWashInstructions(isFinished, null);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
                 }
 
-                return Results.Ok(result.Value);
+                var tankIds = result.Value.WashInstructions.Select(x => x.IsotainerTankId).ToList();
+
+                var tanks = await tankService.GetIsotainerTanks(tankIds);
+                if (tanks.IsFailure)
+                {
+                    return Results.BadRequest(tanks.Error);
+                }
+
+                var washInstructions = result.Value.WashInstructions.Select(x => x with { TankNumber = tanks.Value[x.IsotainerTankId] }).ToList();
+
+                return Results.Ok(washInstructions);
 
             })
             .WithName("GetWashInstructions")
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
-        
         
         group.MapPost("/", async ([FromBody] CreateWashInstructionRequest createWashInstructionRequest, [FromServices] IWashInstructionService washInstructionService) =>
             {
