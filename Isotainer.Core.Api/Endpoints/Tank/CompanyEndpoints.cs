@@ -1,5 +1,7 @@
-﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
+﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.ViewModels.Company;
+using LRouxTech.Core.Auth.Api.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Tank;
@@ -24,6 +26,7 @@ public static class CompanyEndpoints
 
             })
             .WithName("GetCompanies")
+            .RequirePermission(IsotainerPermissions.Tank.ViewCompanies)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -39,6 +42,7 @@ public static class CompanyEndpoints
 
             })
             .WithName("CreateCompany")
+            .RequirePermission(IsotainerPermissions.Tank.CreateCompany)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -54,6 +58,7 @@ public static class CompanyEndpoints
 
             })
             .WithName("UpdateCompany")
+            .RequirePermission(IsotainerPermissions.Tank.UpdateCompany)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -69,6 +74,7 @@ public static class CompanyEndpoints
 
             })
             .WithName("ArchiveCompany")
+            .RequirePermission(IsotainerPermissions.Tank.DeleteCompany)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 

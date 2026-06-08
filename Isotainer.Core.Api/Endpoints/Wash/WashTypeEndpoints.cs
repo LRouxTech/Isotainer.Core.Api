@@ -1,7 +1,9 @@
-﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
+﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.ViewModels.Company;
 using Isotainer.Module.Wash.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.ViewModels.WashType;
+using LRouxTech.Core.Auth.Api.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Wash;
@@ -26,6 +28,7 @@ public static class WashTypeEndpoints
 
             })
             .WithName("GetWashTypes")
+            .RequirePermission(IsotainerPermissions.Wash.ViewWashTypes)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -42,6 +45,7 @@ public static class WashTypeEndpoints
 
             })
             .WithName("CreateWashType")
+            .RequirePermission(IsotainerPermissions.Wash.CreateWashType)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -57,6 +61,7 @@ public static class WashTypeEndpoints
 
             })
             .WithName("UpdateWashType")
+            .RequirePermission(IsotainerPermissions.Wash.UpdateWashType)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -72,6 +77,7 @@ public static class WashTypeEndpoints
 
             })
             .WithName("ArchiveWashType")
+            .RequirePermission(IsotainerPermissions.Wash.DeleteWashType)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         

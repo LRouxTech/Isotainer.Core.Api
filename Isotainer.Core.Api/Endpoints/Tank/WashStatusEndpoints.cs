@@ -1,4 +1,6 @@
-﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
+﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Module.Tank.Core.Interfaces.Services;
+using LRouxTech.Core.Auth.Api.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Tank;
@@ -23,6 +25,7 @@ public static class WashStatusEndpoints
 
             })
             .WithName("GetWashStatuses")
+            .RequirePermission(IsotainerPermissions.Tank.ViewWashStatuses)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         return endpoints;

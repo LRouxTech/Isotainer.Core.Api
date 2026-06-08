@@ -1,9 +1,11 @@
-﻿using Isotainer.Module.Finance.Core.Interfaces.Services;
+﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Module.Finance.Core.Interfaces.Services;
 using Isotainer.Module.Finance.Core.ViewModels.GeneralCost;
 using Isotainer.Module.Finance.Core.ViewModels.Invoice;
 using Isotainer.Module.Tank.Core.Entities;
 using Isotainer.Module.Tank.Infrastructure.Services;
 using Isotainer.Module.Wash.Core.Interfaces.Services;
+using LRouxTech.Core.Auth.Api.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Finance;
@@ -28,6 +30,7 @@ public static class InvoiceEndpoints
 
             })
             .WithName("GetTankInvoices")
+            .RequirePermission(IsotainerPermissions.Finance.ViewTankInvoices)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -43,10 +46,11 @@ public static class InvoiceEndpoints
 
             })
             .WithName("GetCompanyInvoices")
+            .RequirePermission(IsotainerPermissions.Finance.ViewCompanyInvoices)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 
-        group.MapPut("/tank/{TankId:guid}",
+        group.MapPost("/tank/{TankId:guid}",
                 async (Guid tankId,
                     [FromServices] IInvoiceService invoiceService,
                     [FromServices] IWashInstructionService washInstructionService,
@@ -104,6 +108,7 @@ public static class InvoiceEndpoints
                     return Results.Ok(result.Value);
                 })
             .WithName("GenerateTankInvoice")
+            .RequirePermission(IsotainerPermissions.Finance.GenerateTankInvoice)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
   

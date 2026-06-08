@@ -1,7 +1,9 @@
-﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
+﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.ViewModels.WashInstruction;
 using Isotainer.Module.Wash.Core.ViewModels.WashType;
+using LRouxTech.Core.Auth.Api.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Wash;
@@ -36,6 +38,7 @@ public static class WashInstructionEndpoints
 
             })
             .WithName("GetWashInstructions")
+            .RequirePermission(IsotainerPermissions.Wash.ViewWashInstructions)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -50,7 +53,8 @@ public static class WashInstructionEndpoints
                 return Results.Ok(result.Value);
 
             })
-            .WithName("CreateWashType")
+            .WithName("CreateWashInstruction")
+            .RequirePermission(IsotainerPermissions.Wash.CreateWashInstruction)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -65,7 +69,8 @@ public static class WashInstructionEndpoints
                 return Results.Ok(result.Value);
 
             })
-            .WithName("UpdateWashType")
+            .WithName("UpdateWashInstruction")
+            .RequirePermission(IsotainerPermissions.Wash.UpdateWashInstruction)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -80,7 +85,8 @@ public static class WashInstructionEndpoints
                 return Results.Ok(result.Value);
 
             })
-            .WithName("ArchiveWashType")
+            .WithName("ArchiveWashInstruction")
+            .RequirePermission(IsotainerPermissions.Wash.DeleteWashInstruction)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         

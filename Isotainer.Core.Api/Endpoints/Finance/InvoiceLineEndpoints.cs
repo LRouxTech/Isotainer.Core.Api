@@ -1,4 +1,6 @@
-﻿using Isotainer.Module.Finance.Core.Interfaces.Services;
+﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Module.Finance.Core.Interfaces.Services;
+using LRouxTech.Core.Auth.Api.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Finance;
@@ -23,6 +25,7 @@ public static class InvoiceLineEndpoints
 
             })
             .WithName("GetCompanyInvoices")
+            .RequirePermission(IsotainerPermissions.Finance.ViewInvoiceLines)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 

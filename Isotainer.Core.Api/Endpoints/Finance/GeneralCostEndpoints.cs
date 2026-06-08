@@ -1,5 +1,7 @@
-﻿using Isotainer.Module.Finance.Core.Interfaces.Services;
+﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Module.Finance.Core.Interfaces.Services;
 using Isotainer.Module.Finance.Core.ViewModels.GeneralCost;
+using LRouxTech.Core.Auth.Api.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Finance;
@@ -23,6 +25,7 @@ public static class GeneralCostEndpoints
 
             })
             .WithName("GetGeneralCosts")
+            .RequirePermission(IsotainerPermissions.Finance.ViewGeneralCosts)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -37,6 +40,7 @@ public static class GeneralCostEndpoints
                 return Results.Ok(result.Value);
             })
             .WithName("UpdateGeneralCost")
+            .RequirePermission(IsotainerPermissions.Finance.UpdateGeneralCosts)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 

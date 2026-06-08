@@ -41,7 +41,7 @@ public class IsotainerPermissions : AppPermissions
         public const string GeneralCostSection = "GeneralCost";
 
         public static readonly PermissionKey ViewGeneralCosts = new(GeneralCostSection, nameof(ViewGeneralCosts));
-        public static readonly PermissionKey GeneralCosts = new(GeneralCostSection, nameof(GeneralCosts));
+        public static readonly PermissionKey UpdateGeneralCosts = new(GeneralCostSection, nameof(UpdateGeneralCosts));
         
         public const string InvoiceSection = "Invoice";
 

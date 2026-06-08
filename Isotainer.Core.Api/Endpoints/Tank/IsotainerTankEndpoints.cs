@@ -1,5 +1,7 @@
-﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
+﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.ViewModels.IsotainerTank;
+using LRouxTech.Core.Auth.Api.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Tank;
@@ -24,6 +26,7 @@ public static class IsotainerTankEndpoints
 
             })
             .WithName("GetIsotainerTanks")
+            .RequirePermission(IsotainerPermissions.Tank.ViewIsotainers)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -39,6 +42,7 @@ public static class IsotainerTankEndpoints
 
             })
             .WithName("CreateIsotainerTank")
+            .RequirePermission(IsotainerPermissions.Tank.CreateIsotainer)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -54,6 +58,7 @@ public static class IsotainerTankEndpoints
 
             })
             .WithName("UpdateIsotainerTank")
+            .RequirePermission(IsotainerPermissions.Tank.UpdateIsotainer)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -68,6 +73,7 @@ public static class IsotainerTankEndpoints
                 return Results.Ok(result.Value);
             })
             .WithName("ChangeIsotainerTankWashStatus")
+            .RequirePermission(IsotainerPermissions.Tank.ChangeIsotainerWashStatus)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 
@@ -83,6 +89,7 @@ public static class IsotainerTankEndpoints
                 return Results.Ok(result.Value);
             })
             .WithName("UnloadIsotainerTank")
+            .RequirePermission(IsotainerPermissions.Tank.UnloadIsotainer)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
@@ -98,6 +105,7 @@ public static class IsotainerTankEndpoints
 
             })
             .WithName("ArchiveIsotainerTank")
+            .RequirePermission(IsotainerPermissions.Tank.DeleteIsotainer)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 
