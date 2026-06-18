@@ -93,6 +93,8 @@ public class TankContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasDefaultSchema("Tank");
+        
         modelBuilder.Entity<Company>().ConfigureCompany();
         modelBuilder.Entity<WashStatus>().ConfigureWashStatus();
         modelBuilder.Entity<IsotainerTank>().ConfigureIsotainerTank();

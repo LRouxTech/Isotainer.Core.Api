@@ -93,6 +93,8 @@ public class WashContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasDefaultSchema("Wash");
+
         modelBuilder.Entity<WashInstruction>().ConfigureWashInstruction();
         modelBuilder.Entity<WashType>().ConfigureWashType();
         

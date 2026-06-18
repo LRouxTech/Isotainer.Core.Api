@@ -79,18 +79,26 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        var contextFactory = services.GetRequiredService<IDbContextFactory<UserContext>>();
-        await using var context = await contextFactory.CreateDbContextAsync();
-            
-        await context.Database.MigrateAsync(); 
-        
-        await RuntimeDataSeeder.SeedPermissionsAsync<IsotainerPermissions>(context);
-        
-        await RuntimeDataSeeder.SeedRolesAsync<IsotainerRoles>(context);
+        var userFactory = services.GetRequiredService<IDbContextFactory<UserContext>>();
+        var financeFactory = services.GetRequiredService<IDbContextFactory<FinanceContext>>();
+        var tankFactory = services.GetRequiredService<IDbContextFactory<TankContext>>();
+        var washFactory = services.GetRequiredService<IDbContextFactory<WashContext>>();
 
-        await RuntimeDataSeeder.SeedAdminUserAsync(context);
+        await using var userContext = await userFactory.CreateDbContextAsync();
+        await using var financeContext = await financeFactory.CreateDbContextAsync();
+        await using var tankContext = await tankFactory.CreateDbContextAsync();
+        await using var washContext = await washFactory.CreateDbContextAsync();
 
-        await RuntimeDataSeeder.SyncRolePermissionsAsync(context, IsotainerRoles.TankAdmin, [
+        await userContext.Database.MigrateAsync(); 
+        await financeContext.Database.MigrateAsync();
+        await tankContext.Database.MigrateAsync(); 
+        await washContext.Database.MigrateAsync(); 
+
+        await RuntimeDataSeeder.SeedPermissionsAsync<IsotainerPermissions>(userContext);
+        await RuntimeDataSeeder.SeedRolesAsync<IsotainerRoles>(userContext);
+        await RuntimeDataSeeder.SeedAdminUserAsync(userContext);
+
+        await RuntimeDataSeeder.SyncRolePermissionsAsync(userContext, IsotainerRoles.TankAdmin, [
             IsotainerPermissions.Tank.ViewCompanies,
             IsotainerPermissions.Tank.ViewIsotainers,
             IsotainerPermissions.Tank.CreateIsotainer,
@@ -105,7 +113,7 @@ using (var scope = app.Services.CreateScope())
             IsotainerPermissions.Wash.DeleteWashInstruction,
         ]);
         
-        await RuntimeDataSeeder.SyncRolePermissionsAsync(context, IsotainerRoles.FinanceAdmin, [
+        await RuntimeDataSeeder.SyncRolePermissionsAsync(userContext, IsotainerRoles.FinanceAdmin, [
             IsotainerPermissions.Tank.ViewCompanies,
             IsotainerPermissions.Tank.ViewIsotainers,
             IsotainerPermissions.Tank.ViewWashStatuses,
@@ -116,7 +124,7 @@ using (var scope = app.Services.CreateScope())
             IsotainerPermissions.Finance.ViewInvoiceLines,
         ]);
         
-        await RuntimeDataSeeder.SyncRolePermissionsAsync(context, IsotainerRoles.Washer, [
+        await RuntimeDataSeeder.SyncRolePermissionsAsync(userContext, IsotainerRoles.Washer, [
             IsotainerPermissions.Tank.ViewCompanies,
             IsotainerPermissions.Tank.ViewIsotainers,
             IsotainerPermissions.Tank.ViewWashStatuses,
@@ -125,23 +133,9 @@ using (var scope = app.Services.CreateScope())
             IsotainerPermissions.Wash.UpdateWashInstruction,
         ]);
         
-        var financeFactory = services.GetRequiredService<IDbContextFactory<FinanceContext>>();
-        await using var financeContext = await financeFactory.CreateDbContextAsync();
-            
-        await financeContext.Database.MigrateAsync();
-
         await FinanceDataSeeder.SeedGeneralCostsAsync(financeContext);
         
-        var tankFactory = services.GetRequiredService<IDbContextFactory<TankContext>>();
-        await using var tankContext = await tankFactory.CreateDbContextAsync();
-            
         await TankDataSeeder.SeedWashStatusAsync(tankContext);
-        await tankContext.Database.MigrateAsync(); 
-        
-        var washFactory = services.GetRequiredService<IDbContextFactory<WashContext>>();
-        await using var washContext = await washFactory.CreateDbContextAsync();
-            
-        await washContext.Database.MigrateAsync(); 
     }
     catch (Exception ex)
     {

@@ -17,6 +17,7 @@ namespace Isotainer.Module.Tank.Infrastructure.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("Tank")
                 .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -56,7 +57,7 @@ namespace Isotainer.Module.Tank.Infrastructure.Database.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Company", (string)null);
+                    b.ToTable("Company", "Tank");
                 });
 
             modelBuilder.Entity("Isotainer.Module.Tank.Core.Entities.IsotainerTank", b =>
@@ -109,7 +110,7 @@ namespace Isotainer.Module.Tank.Infrastructure.Database.Migrations
 
                     b.HasIndex("WashStatusId");
 
-                    b.ToTable("IsotainerTank", (string)null);
+                    b.ToTable("IsotainerTank", "Tank");
                 });
 
             modelBuilder.Entity("Isotainer.Module.Tank.Core.Entities.WashStatus", b =>
@@ -142,7 +143,7 @@ namespace Isotainer.Module.Tank.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WashStatus", (string)null);
+                    b.ToTable("WashStatus", "Tank");
                 });
 
             modelBuilder.Entity("Isotainer.Module.Tank.Core.Entities.IsotainerTank", b =>

@@ -11,8 +11,12 @@ namespace Isotainer.Module.Wash.Infrastructure.Database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "Wash");
+
             migrationBuilder.CreateTable(
                 name: "WashType",
+                schema: "Wash",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -32,6 +36,7 @@ namespace Isotainer.Module.Wash.Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "WashInstruction",
+                schema: "Wash",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -52,6 +57,7 @@ namespace Isotainer.Module.Wash.Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_WashInstruction_WashType_WashTypeId",
                         column: x => x.WashTypeId,
+                        principalSchema: "Wash",
                         principalTable: "WashType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -59,11 +65,13 @@ namespace Isotainer.Module.Wash.Infrastructure.Database.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_WashInstruction_WashTypeId",
+                schema: "Wash",
                 table: "WashInstruction",
                 column: "WashTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WashType_Type",
+                schema: "Wash",
                 table: "WashType",
                 column: "Type",
                 unique: true);
@@ -73,10 +81,12 @@ namespace Isotainer.Module.Wash.Infrastructure.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "WashInstruction");
+                name: "WashInstruction",
+                schema: "Wash");
 
             migrationBuilder.DropTable(
-                name: "WashType");
+                name: "WashType",
+                schema: "Wash");
         }
     }
 }

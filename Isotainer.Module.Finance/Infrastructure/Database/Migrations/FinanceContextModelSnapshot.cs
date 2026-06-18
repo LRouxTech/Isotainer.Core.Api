@@ -17,6 +17,7 @@ namespace Isotainer.Module.Finance.Infrastructure.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("Finance")
                 .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -54,7 +55,7 @@ namespace Isotainer.Module.Finance.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GeneralCost", (string)null);
+                    b.ToTable("GeneralCost", "Finance");
                 });
 
             modelBuilder.Entity("Isotainer.Module.Finance.Core.Entities.Invoice", b =>
@@ -99,7 +100,7 @@ namespace Isotainer.Module.Finance.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Invoice", (string)null);
+                    b.ToTable("Invoice", "Finance");
                 });
 
             modelBuilder.Entity("Isotainer.Module.Finance.Core.Entities.InvoiceLine", b =>
@@ -141,7 +142,7 @@ namespace Isotainer.Module.Finance.Infrastructure.Database.Migrations
 
                     b.HasIndex("InvoiceId");
 
-                    b.ToTable("InvoiceLine", (string)null);
+                    b.ToTable("InvoiceLine", "Finance");
                 });
 
             modelBuilder.Entity("Isotainer.Module.Finance.Core.Entities.InvoiceLine", b =>

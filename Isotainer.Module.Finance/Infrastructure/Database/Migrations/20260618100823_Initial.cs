@@ -11,8 +11,12 @@ namespace Isotainer.Module.Finance.Infrastructure.Database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "Finance");
+
             migrationBuilder.CreateTable(
                 name: "GeneralCost",
+                schema: "Finance",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -32,6 +36,7 @@ namespace Isotainer.Module.Finance.Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Invoice",
+                schema: "Finance",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -54,6 +59,7 @@ namespace Isotainer.Module.Finance.Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "InvoiceLine",
+                schema: "Finance",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -73,6 +79,7 @@ namespace Isotainer.Module.Finance.Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_InvoiceLine_Invoice_InvoiceId",
                         column: x => x.InvoiceId,
+                        principalSchema: "Finance",
                         principalTable: "Invoice",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -80,6 +87,7 @@ namespace Isotainer.Module.Finance.Infrastructure.Database.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_InvoiceLine_InvoiceId",
+                schema: "Finance",
                 table: "InvoiceLine",
                 column: "InvoiceId");
         }
@@ -88,13 +96,16 @@ namespace Isotainer.Module.Finance.Infrastructure.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "GeneralCost");
+                name: "GeneralCost",
+                schema: "Finance");
 
             migrationBuilder.DropTable(
-                name: "InvoiceLine");
+                name: "InvoiceLine",
+                schema: "Finance");
 
             migrationBuilder.DropTable(
-                name: "Invoice");
+                name: "Invoice",
+                schema: "Finance");
         }
     }
 }

@@ -92,6 +92,8 @@ public class FinanceContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.HasDefaultSchema("Finance");
 
         modelBuilder.Entity<GeneralCost>().ConfigureGeneralCost();
         modelBuilder.Entity<Invoice>().ConfigureInvoice();

@@ -11,8 +11,12 @@ namespace Isotainer.Module.Tank.Infrastructure.Database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "Tank");
+
             migrationBuilder.CreateTable(
                 name: "Company",
+                schema: "Tank",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -31,6 +35,7 @@ namespace Isotainer.Module.Tank.Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "WashStatus",
+                schema: "Tank",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -49,6 +54,7 @@ namespace Isotainer.Module.Tank.Infrastructure.Database.Migrations
 
             migrationBuilder.CreateTable(
                 name: "IsotainerTank",
+                schema: "Tank",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -70,12 +76,14 @@ namespace Isotainer.Module.Tank.Infrastructure.Database.Migrations
                     table.ForeignKey(
                         name: "FK_IsotainerTank_Company_CompanyId",
                         column: x => x.CompanyId,
+                        principalSchema: "Tank",
                         principalTable: "Company",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_IsotainerTank_WashStatus_WashStatusId",
                         column: x => x.WashStatusId,
+                        principalSchema: "Tank",
                         principalTable: "WashStatus",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -83,23 +91,27 @@ namespace Isotainer.Module.Tank.Infrastructure.Database.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Company_Name",
+                schema: "Tank",
                 table: "Company",
                 column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_IsotainerTank_CompanyId",
+                schema: "Tank",
                 table: "IsotainerTank",
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IsotainerTank_TankNumber",
+                schema: "Tank",
                 table: "IsotainerTank",
                 column: "TankNumber",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_IsotainerTank_WashStatusId",
+                schema: "Tank",
                 table: "IsotainerTank",
                 column: "WashStatusId");
         }
@@ -108,13 +120,16 @@ namespace Isotainer.Module.Tank.Infrastructure.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "IsotainerTank");
+                name: "IsotainerTank",
+                schema: "Tank");
 
             migrationBuilder.DropTable(
-                name: "Company");
+                name: "Company",
+                schema: "Tank");
 
             migrationBuilder.DropTable(
-                name: "WashStatus");
+                name: "WashStatus",
+                schema: "Tank");
         }
     }
 }
