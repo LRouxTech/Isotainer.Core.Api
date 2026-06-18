@@ -24,7 +24,7 @@ public static class InvoiceLineEndpoints
                 return Results.Ok(result.Value);
 
             })
-            .WithName("GetCompanyInvoices")
+            .WithName("GetCompanyInvoiceLines")
             .RequirePermission(IsotainerPermissions.Finance.ViewInvoiceLines)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
