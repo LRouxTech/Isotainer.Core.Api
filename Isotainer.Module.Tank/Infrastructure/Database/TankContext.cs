@@ -23,7 +23,7 @@ public class TankContextDesignTimeFactory : IDesignTimeDbContextFactory<TankCont
         optionsBuilder.UseNpgsql(connectionString, x =>
         {
             x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "Tank");
-            x.MigrationsAssembly("LRouxTech.Core.Auth");
+            x.MigrationsAssembly("Isotainer.Module.Tank");
         });
 
         return new TankContext(optionsBuilder.Options);

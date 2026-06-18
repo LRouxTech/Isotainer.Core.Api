@@ -1,3 +1,3 @@
 ﻿namespace Isotainer.Module.Tank.Core.ViewModels.IsotainerTank;
 
-public record CreateIsotainerTankRequest(Guid IsotainerTankId, string TankNumber, Guid CompanyId);
+public record CreateIsotainerTankRequest(string TankNumber, Guid CompanyId);

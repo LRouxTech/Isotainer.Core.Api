@@ -39,11 +39,6 @@ public class IsotainerTankValidator : IIsotainerTankValidator
 
     public Result<bool> ValidateChangeIsotainerWashStatus(ChangeWashStatusRequest request)
     {
-        if (request.IsotainerTankId != Guid.Empty)
-        {
-            return IsotainerTankErrors.NotFound;
-        }
-        
         if (request.WashStatusId != Guid.Empty)
         {
             return WashStatusErrors.NotFound;

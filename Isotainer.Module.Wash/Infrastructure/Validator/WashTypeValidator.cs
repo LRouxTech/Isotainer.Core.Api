@@ -26,11 +26,6 @@ public class WashTypeValidator : IWashTypeValidator
 
     public Result<bool> ValidateUpdateWashType(UpdateWashTypeRequest request)
     {
-        if (request.WashTypeId == Guid.Empty)
-        {
-            return WashTypeErrors.NotFound;
-        }
-        
         if (request.Cost < 0)
         {
             return WashTypeErrors.NegativeCost;

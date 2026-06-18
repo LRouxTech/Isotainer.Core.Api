@@ -23,7 +23,7 @@ public class FinanceContextDesignTimeFactory : IDesignTimeDbContextFactory<Finan
         optionsBuilder.UseNpgsql(connectionString, x =>
         {
             x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "Finance");
-            x.MigrationsAssembly("LRouxTech.Core.Auth");
+            x.MigrationsAssembly("Isotainer.Module.Finance");
         });
 
         return new FinanceContext(optionsBuilder.Options);

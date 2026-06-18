@@ -24,7 +24,7 @@ public class WashContextDesignTimeFactory : IDesignTimeDbContextFactory<WashCont
         optionsBuilder.UseNpgsql(connectionString, x =>
         {
             x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "Wash");
-            x.MigrationsAssembly("LRouxTech.Core.Auth");
+            x.MigrationsAssembly("Isotainer.Module.Wash");
         });
 
         return new WashContext(optionsBuilder.Options);

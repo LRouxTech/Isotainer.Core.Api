@@ -1,4 +1,9 @@
 using Isotainer.Core.Api.Auth;
+using Isotainer.Module.Finance.Infrastructure.Database;
+using Isotainer.Module.Finance.Infrastructure.Database.Seed;
+using Isotainer.Module.Tank.Infrastructure.Database;
+using Isotainer.Module.Tank.Infrastructure.Database.Seed;
+using Isotainer.Module.Wash.Infrastructure.Database;
 using LRouxTech.Core.Auth.Api.Authorization;
 using LRouxTech.Core.Auth.Api.Extensions;
 using LRouxTech.Core.Auth.Infrastructure.Database;
@@ -14,9 +19,9 @@ builder.Configuration
 
 builder.Services.AddScoped<IUserDbContextFactory, UserDbContextFactory>();
 
-if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("testdb")))
+if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("DefaultConnection")))
 {
-    var conString = builder.Configuration.GetConnectionString("testdb");
+    var conString = builder.Configuration.GetConnectionString("DefaultConnection");
     
     builder.Services.AddDbContextFactory<UserContext, UserDbContextFactory>(options =>
     {
@@ -25,6 +30,36 @@ if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("testdb
             x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
             x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "User");
             x.MigrationsAssembly("LRouxTech.Core.Auth");
+        });
+    });
+    
+    builder.Services.AddDbContextFactory<FinanceContext, FinanceDbContextFactory>(options =>
+    {
+        options.UseNpgsql(conString, x =>
+        {
+            x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+            x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "Finance");
+            x.MigrationsAssembly("Isotainer.Module.Finance");
+        });
+    });
+    
+    builder.Services.AddDbContextFactory<TankContext, TankDbContextFactory>(options =>
+    {
+        options.UseNpgsql(conString, x =>
+        {
+            x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+            x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "Tank");
+            x.MigrationsAssembly("Isotainer.Module.Tank");
+        });
+    });
+    
+    builder.Services.AddDbContextFactory<WashContext, WashDbContextFactory>(options =>
+    {
+        options.UseNpgsql(conString, x =>
+        {
+            x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+            x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "Wash");
+            x.MigrationsAssembly("Isotainer.Module.Wash");
         });
     });
 }
@@ -45,7 +80,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var contextFactory = services.GetRequiredService<IDbContextFactory<UserContext>>();
-        using var context = await contextFactory.CreateDbContextAsync();
+        await using var context = await contextFactory.CreateDbContextAsync();
             
         await context.Database.MigrateAsync(); 
         
@@ -89,6 +124,24 @@ using (var scope = app.Services.CreateScope())
             IsotainerPermissions.Wash.ViewWashInstructions,
             IsotainerPermissions.Wash.UpdateWashInstruction,
         ]);
+        
+        var financeFactory = services.GetRequiredService<IDbContextFactory<FinanceContext>>();
+        await using var financeContext = await financeFactory.CreateDbContextAsync();
+            
+        await financeContext.Database.MigrateAsync();
+
+        await FinanceDataSeeder.SeedGeneralCostsAsync(financeContext);
+        
+        var tankFactory = services.GetRequiredService<IDbContextFactory<TankContext>>();
+        await using var tankContext = await tankFactory.CreateDbContextAsync();
+            
+        await TankDataSeeder.SeedWashStatusAsync(tankContext);
+        await tankContext.Database.MigrateAsync(); 
+        
+        var washFactory = services.GetRequiredService<IDbContextFactory<WashContext>>();
+        await using var washContext = await washFactory.CreateDbContextAsync();
+            
+        await washContext.Database.MigrateAsync(); 
     }
     catch (Exception ex)
     {
