@@ -1,5 +1,6 @@
 ﻿using Isotainer.Module.Finance.Core.Interfaces.Services;
 using Isotainer.Module.Finance.Core.Interfaces.Validators;
+using Isotainer.Module.Finance.Infrastructure.Database;
 using Isotainer.Module.Finance.Infrastructure.Services;
 using Isotainer.Module.Finance.Infrastructure.Validator;
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +20,7 @@ public static class FinanceExtension
     
     public static IServiceCollection AddFinanceContext(this IServiceCollection services)
     {
-
+        services.AddSingleton<IFinanceDbContextFactory, FinanceDbContextFactory>();
         return services;
     }
     

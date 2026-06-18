@@ -1,10 +1,15 @@
 using Isotainer.Core.Api.Auth;
+using Isotainer.Core.Api.Endpoints.Extensions;
+using Isotainer.Core.Api.Endpoints.Finance;
+using Isotainer.Core.Api.Endpoints.Tank;
+using Isotainer.Core.Api.Endpoints.Wash;
 using Isotainer.Module.Finance.Infrastructure.Database;
 using Isotainer.Module.Finance.Infrastructure.Database.Seed;
 using Isotainer.Module.Tank.Infrastructure.Database;
 using Isotainer.Module.Tank.Infrastructure.Database.Seed;
 using Isotainer.Module.Wash.Infrastructure.Database;
 using LRouxTech.Core.Auth.Api.Authorization;
+using LRouxTech.Core.Auth.Api.Endpoints;
 using LRouxTech.Core.Auth.Api.Extensions;
 using LRouxTech.Core.Auth.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -71,8 +76,11 @@ builder.Services.AddOpenApi();
 builder.Services.AddAuthModule();
 builder.Services.AddCustomPermissions<IsotainerPermissions>();
 
-var app = builder.Build();
+builder.Services.AddFinanceModule();
+builder.Services.AddTankModule();
+builder.Services.AddWashModule();
 
+var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -151,6 +159,21 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapRoleEndpoints();
+app.MapPermissionEndpoints();
+app.MapUserEndpoints();
+
+app.MapGeneralCostEndpoints();
+app.MapInvoiceEndpoints();
+app.MapInvoiceListEndpoints();
+
+app.MapCompanyEndpoints();
+app.MapIsotainerTankEndpoints();
+app.MapWashStatusEndpoints();
+
+app.MapWashInstructionEndpoints();
+app.MapWashTypeEndpoints();
 
 app.UseAuthorization();
 

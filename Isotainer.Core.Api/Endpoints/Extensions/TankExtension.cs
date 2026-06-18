@@ -1,5 +1,6 @@
 ﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.Interfaces.Validators;
+using Isotainer.Module.Tank.Infrastructure.Database;
 using Isotainer.Module.Tank.Infrastructure.Services;
 using Isotainer.Module.Tank.Infrastructure.Validator;
 
@@ -10,14 +11,15 @@ public static class TankExtension
     public static IServiceCollection AddTankModule(this IServiceCollection services)
     {
         services.AddValidationTankModule();
-        services.AddServiceTankModule();
         services.AddTankContext();
+        services.AddServiceTankModule();
 
         return services;
     }
     
     public static IServiceCollection AddTankContext(this IServiceCollection services)
     {
+        services.AddSingleton<ITankDbContextFactory, TankDbContextFactory>();
 
         return services;
     }
