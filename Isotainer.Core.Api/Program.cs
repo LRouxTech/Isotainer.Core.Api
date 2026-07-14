@@ -22,6 +22,19 @@ builder.Configuration
     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() 
+                     ?? Array.Empty<string>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddScoped<IUserDbContextFactory, UserDbContextFactory>();
 
 if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("DefaultConnection")))
@@ -81,6 +94,8 @@ builder.Services.AddTankModule();
 builder.Services.AddWashModule();
 
 var app = builder.Build();
+
+app.UseCors("AllowFrontend");
 
 using (var scope = app.Services.CreateScope())
 {
