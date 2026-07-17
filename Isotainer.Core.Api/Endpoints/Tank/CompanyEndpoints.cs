@@ -1,7 +1,9 @@
 ﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Core.Api.tempmodels;
 using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.ViewModels.Company;
 using LRouxTech.Core.Auth.Api.Authorization;
+using LRouxTech.Core.ValidationResult;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Tank;
@@ -75,6 +77,37 @@ public static class CompanyEndpoints
             })
             .WithName("ArchiveCompany")
             .RequirePermission(IsotainerPermissions.Tank.DeleteCompany)
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest);
+        
+        group.MapGet("/stats", async ([FromServices] ICompanyService companyService) =>
+            {
+                Task<Result<int>> totalRecordsTask = companyService.GetTotalRecords();
+                Task<Result<DateTime>> lastUpdatedTask = companyService.GetLastUpdated();
+
+                await Task.WhenAll(totalRecordsTask, lastUpdatedTask);
+
+                var totalRecords = totalRecordsTask.Result;
+                var lastUpdated = lastUpdatedTask.Result;
+
+                if (totalRecords.IsFailure)
+                {
+                    return Results.BadRequest(totalRecords.Error);
+                }
+
+                if (lastUpdated.IsFailure)
+                {
+                    return Results.BadRequest(lastUpdated.Error);
+                }
+
+                return Results.Ok(new CardInformation
+                {
+                    LastUpdated =  lastUpdated.Value.ToRelativeTime(),
+                    RecordCount = totalRecords.Value,
+                });
+
+            })
+            .WithName("GetCompanyStats")
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 

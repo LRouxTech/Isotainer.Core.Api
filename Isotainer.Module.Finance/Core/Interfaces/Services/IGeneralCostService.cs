@@ -7,4 +7,6 @@ public interface IGeneralCostService
 {
     Task<Result<GeneralCostUpdateResponse>> UpdateGeneralCost(Guid Id, UpdateGeneralCostRequest request);
     Task<Result<GeneralCostListResponse>> GetGeneralCosts();
+    Task<Result<int>> GetTotalRecords();
+    Task<Result<DateTime>> GetLastUpdated();
 }

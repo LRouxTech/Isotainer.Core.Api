@@ -91,4 +91,24 @@ public class CompanyService(ITankDbContextFactory dbContextFactory, ICompanyVali
 
         return true;
     }
+    
+    public async Task<Result<int>> GetTotalRecords()
+    {
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        var generalCostCount = await tankContext.Companies
+            .CountAsync();
+        
+        return generalCostCount;
+    }
+    
+    public async Task<Result<DateTime>> GetLastUpdated()
+    {
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        var lastUpdatedOrNull = await tankContext.Companies
+            .MaxAsync(x => (DateTime?)(x.UpdatedOn > x.CreatedOn ? x.UpdatedOn : x.CreatedOn));
+
+        var lastUpdated = lastUpdatedOrNull ?? DateTime.MinValue;
+        
+        return lastUpdated;
+    }
 }

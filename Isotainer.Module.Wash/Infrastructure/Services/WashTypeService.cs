@@ -94,4 +94,23 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
 
         return true;
     }
+    
+    public async Task<Result<int>> GetTotalRecords()
+    {
+        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        var generalCostCount = await washContext.WashTypes
+            .CountAsync();
+        
+        return generalCostCount;
+    }
+    
+    public async Task<Result<DateTime>> GetLastUpdated()
+    {
+        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        var lastUpdatedOrNull = await washContext.WashTypes
+            .MaxAsync(x => (DateTime?)(x.UpdatedOn > x.CreatedOn ? x.UpdatedOn : x.CreatedOn));
+
+        var lastUpdated = lastUpdatedOrNull ?? DateTime.MinValue;
+        return lastUpdated;
+    }
 }

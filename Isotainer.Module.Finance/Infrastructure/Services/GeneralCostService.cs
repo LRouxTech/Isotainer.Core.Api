@@ -42,4 +42,23 @@ public class GeneralCostService(IFinanceDbContextFactory dbContextFactory, IGene
         
         return new GeneralCostListResponse(generalCosts);
     }
+    
+    public async Task<Result<int>> GetTotalRecords()
+    {
+        await using var financeContext = await dbContextFactory.CreateDbContextAsync();
+        var generalCostCount = await financeContext.GeneralCosts
+            .CountAsync();
+        
+        return generalCostCount;
+    }
+    
+    public async Task<Result<DateTime>> GetLastUpdated()
+    {
+        await using var financeContext = await dbContextFactory.CreateDbContextAsync();
+        var lastUpdatedOrNull = await financeContext.GeneralCosts
+            .MaxAsync(x => (DateTime?)(x.UpdatedOn > x.CreatedOn ? x.UpdatedOn : x.CreatedOn));
+
+        var lastUpdated = lastUpdatedOrNull ?? DateTime.MinValue;
+        return lastUpdated;
+    }
 }

@@ -9,4 +9,6 @@ public interface ICompanyService
     Task<Result<CompanyResponse>> UpdateCompany(Guid companyId, UpdateCompanyRequest request);
     Task<Result<CompanyListResponse>> GetCompanyList();
     Task<Result<bool>> ArchiveCompany(Guid companyId);
+    Task<Result<int>> GetTotalRecords();
+    Task<Result<DateTime>> GetLastUpdated();
 }

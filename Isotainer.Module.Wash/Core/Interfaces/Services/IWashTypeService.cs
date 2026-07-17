@@ -9,4 +9,6 @@ public interface IWashTypeService
     Task<Result<WashTypeResponse>> UpdateWashType(Guid washTypeId, UpdateWashTypeRequest request);
     Task<Result<WashTypeListResponse>> GetWashTypes();
     Task<Result<bool>> ArchiveWashType(Guid washTypeId);
+    Task<Result<int>> GetTotalRecords();
+    Task<Result<DateTime>> GetLastUpdated();
 }
