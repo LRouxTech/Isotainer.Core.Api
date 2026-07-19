@@ -120,6 +120,40 @@ using (var scope = app.Services.CreateScope())
         await RuntimeDataSeeder.SeedPermissionsAsync<IsotainerPermissions>(userContext);
         await RuntimeDataSeeder.SeedRolesAsync<IsotainerRoles>(userContext);
         await RuntimeDataSeeder.SeedAdminUserAsync(userContext);
+        
+        await RuntimeDataSeeder.SyncRolePermissionsAsync(userContext, IsotainerRoles.Admin, [
+            IsotainerPermissions.Tank.ViewCompanies,
+            IsotainerPermissions.Tank.CreateCompany,
+            IsotainerPermissions.Tank.UpdateCompany,
+            IsotainerPermissions.Tank.DeleteCompany,
+            
+            IsotainerPermissions.Tank.ViewIsotainers,
+            IsotainerPermissions.Tank.CreateIsotainer,
+            IsotainerPermissions.Tank.UpdateIsotainer,
+            IsotainerPermissions.Tank.ChangeIsotainerWashStatus,
+            IsotainerPermissions.Tank.UnloadIsotainer,
+            IsotainerPermissions.Tank.DeleteIsotainer,
+            
+            IsotainerPermissions.Tank.ViewWashStatuses,
+            
+            IsotainerPermissions.Finance.ViewGeneralCosts,
+            IsotainerPermissions.Finance.UpdateGeneralCosts,
+            IsotainerPermissions.Finance.ViewTankInvoices,
+            IsotainerPermissions.Finance.ViewCompanyInvoices,
+            IsotainerPermissions.Finance.ViewInvoice,
+            IsotainerPermissions.Finance.GenerateTankInvoice,
+            IsotainerPermissions.Finance.ViewInvoiceLines,
+            
+            IsotainerPermissions.Wash.ViewWashTypes,
+            IsotainerPermissions.Wash.CreateWashType,
+            IsotainerPermissions.Wash.UpdateWashType,
+            IsotainerPermissions.Wash.DeleteWashType,
+            IsotainerPermissions.Wash.ViewWashInstructions,
+            IsotainerPermissions.Wash.CreateWashInstruction,
+            IsotainerPermissions.Wash.UpdateWashInstruction,
+            IsotainerPermissions.Wash.DeleteWashInstruction,
+
+        ]);
 
         await RuntimeDataSeeder.SyncRolePermissionsAsync(userContext, IsotainerRoles.TankAdmin, [
             IsotainerPermissions.Tank.ViewCompanies,
