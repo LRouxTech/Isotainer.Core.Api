@@ -37,10 +37,19 @@ public class GeneralCostService(IFinanceDbContextFactory dbContextFactory, IGene
     {
         await using var financeContext = await dbContextFactory.CreateDbContextAsync();
         var generalCosts = await financeContext.GeneralCosts
-            .Select(x => new GeneralCostItem(x.Id, x.CostItem.ToString(), x.Cost))
+            .Select(x => new 
+            {
+                x.Id,
+                x.CostItem,
+                x.Cost
+            })
             .ToListAsync();
+
+        var result = generalCosts
+            .Select(x => new GeneralCostItem(x.Id, x.CostItem.ToString(), x.Cost))
+            .ToList();
         
-        return new GeneralCostListResponse(generalCosts);
+        return new GeneralCostListResponse(result);
     }
     
     public async Task<Result<int>> GetTotalRecords()

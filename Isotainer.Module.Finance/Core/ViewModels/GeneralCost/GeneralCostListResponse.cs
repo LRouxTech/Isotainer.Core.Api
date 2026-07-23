@@ -2,4 +2,4 @@
 
 public record GeneralCostListResponse(List<GeneralCostItem> GeneralCosts);
 
-public class GeneralCostItem(Guid GeneralCostId, string Name, double Cost);
+public record GeneralCostItem(Guid GeneralCostId, string Name, double Cost);
