@@ -122,6 +122,11 @@ using (var scope = app.Services.CreateScope())
         await RuntimeDataSeeder.SeedAdminUserAsync(userContext);
         
         await RuntimeDataSeeder.SyncRolePermissionsAsync(userContext, IsotainerRoles.Admin, [
+            IsotainerPermissions.UserManagement.Create,
+            IsotainerPermissions.UserManagement.Read,
+            IsotainerPermissions.UserManagement.Update,
+            IsotainerPermissions.UserManagement.Delete,
+            
             IsotainerPermissions.Tank.ViewCompanies,
             IsotainerPermissions.Tank.CreateCompany,
             IsotainerPermissions.Tank.UpdateCompany,
