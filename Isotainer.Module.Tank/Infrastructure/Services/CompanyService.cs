@@ -88,6 +88,8 @@ public class CompanyService(ITankDbContextFactory dbContextFactory, ICompanyVali
         }
 
         company.Archive();
+        tankContext.Companies.Update(company);
+        await tankContext.SaveChangesAsync();
 
         return true;
     }

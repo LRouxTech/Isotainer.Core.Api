@@ -2,5 +2,5 @@
 
 public record CompanyListResponse(List<CompanyItem> Items);
 
-public class CompanyItem(Guid companyId, string name);
+public record CompanyItem(Guid companyId, string name);
 

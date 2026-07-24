@@ -64,9 +64,9 @@ public static class CompanyEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapDelete("/{InvoiceId:guid}/", async (Guid invoiceId, [FromServices] ICompanyService companyService) =>
+        group.MapDelete("/{CompanyId:guid}/", async (Guid companyId, [FromServices] ICompanyService companyService) =>
             {
-                var result = await companyService.ArchiveCompany(invoiceId);
+                var result = await companyService.ArchiveCompany(companyId);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
