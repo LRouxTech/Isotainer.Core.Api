@@ -19,9 +19,9 @@ public static class WashTypeEndpoints
             .WithTags("WashType");
 
         group.MapGet("/",
-                async ([FromServices] IWashTypeService washTypeService) =>
+                async ([AsParameters] PagedRequest request, [FromServices] IWashTypeService washTypeService) =>
                 {
-                    var result = await washTypeService.GetWashTypes();
+                    var result = await washTypeService.GetWashTypes(request);
                     if (result.IsFailure)
                     {
                         return Results.BadRequest(result.Error);

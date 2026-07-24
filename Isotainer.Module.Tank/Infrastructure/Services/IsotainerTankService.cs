@@ -1,4 +1,5 @@
-﻿using Isotainer.Module.Tank.Core.Entities;
+﻿using Isotainer.Core.Api.tempmodels;
+using Isotainer.Module.Tank.Core.Entities;
 using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.Interfaces.Validators;
 using Isotainer.Module.Tank.Core.ViewModels.IsotainerTank;
@@ -75,14 +76,21 @@ public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsota
         return new IsotainerTankResponse(tank.Id, tank.TankNumber, tank.WashStatusId, tank.CompanyId, tank.LoadedOn);
     }
 
-    public async Task<Result<IsotainerTankListResponse>> GetIsotainerTanks()
+    public async Task<Result<PagedList<IsotainerTankItem>>> GetIsotainerTanks(PagedRequest request)
     {
         await using var tankContext = await dbContextFactory.CreateDbContextAsync();
-        var tanks = tankContext.IsotainerTanks
+        var query = tankContext.IsotainerTanks.AsNoTracking();
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderBy(x => x.Id)
+            .Skip((request.PageIndex - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(x => new IsotainerTankItem(x.Id, x.TankNumber, x.CompanyId, x.WashStatusId, x.LoadedOn, x.UnloadedOn))
-            .ToList();
-        
-        return new IsotainerTankListResponse(tanks);
+            .ToListAsync();
+
+        return new PagedList<IsotainerTankItem>(items, totalCount, request.PageIndex, request.PageSize);
     }
     
     public async Task<Result<Dictionary<Guid, string>>> GetIsotainerTanks(List<Guid> ids)

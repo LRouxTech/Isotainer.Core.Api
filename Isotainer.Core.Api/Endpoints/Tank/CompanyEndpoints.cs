@@ -16,9 +16,9 @@ public static class CompanyEndpoints
         var group = endpoints.MapGroup(prefix)
             .WithTags("Company");
         
-        group.MapGet("/", async ([FromServices] ICompanyService companyService) =>
+        group.MapGet("/", async ([AsParameters] PagedRequest request, [FromServices] ICompanyService companyService) =>
             {
-                var result = await companyService.GetCompanyList();
+                var result = await companyService.GetCompanyList(request);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);

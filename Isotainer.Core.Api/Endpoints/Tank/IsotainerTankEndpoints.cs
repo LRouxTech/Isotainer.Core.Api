@@ -1,4 +1,5 @@
 ﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Core.Api.tempmodels;
 using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.ViewModels.IsotainerTank;
 using LRouxTech.Core.Auth.Api.Authorization;
@@ -14,9 +15,9 @@ public static class IsotainerTankEndpoints
         var group = endpoints.MapGroup(prefix)
             .WithTags("IsotainerTank");
         
-        group.MapGet("/", async ([FromServices] IIsotainerTankService isotainerTankService) =>
+        group.MapGet("/", async ([AsParameters] PagedRequest request, [FromServices] IIsotainerTankService isotainerTankService) =>
             {
-                var result = await isotainerTankService.GetIsotainerTanks();
+                var result = await isotainerTankService.GetIsotainerTanks(request);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);

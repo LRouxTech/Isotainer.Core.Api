@@ -1,4 +1,5 @@
-﻿using Isotainer.Module.Tank.Core.Entities;
+﻿using Isotainer.Core.Api.tempmodels;
+using Isotainer.Module.Tank.Core.Entities;
 using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.Interfaces.Validators;
 using Isotainer.Module.Tank.Core.ViewModels.Company;
@@ -66,14 +67,21 @@ public class CompanyService(ITankDbContextFactory dbContextFactory, ICompanyVali
         return new CompanyResponse(company.Id, company.Name);
     }
 
-    public async Task<Result<CompanyListResponse>> GetCompanyList()
+    public async Task<Result<PagedList<CompanyItem>>> GetCompanyList(PagedRequest request)
     {
         await using var tankContext = await dbContextFactory.CreateDbContextAsync();
-        var companies = await tankContext.Companies
+        var query = tankContext.Companies.AsNoTracking();
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderBy(x => x.Id)
+            .Skip((request.PageIndex - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(x => new CompanyItem(x.Id, x.Name))
-            .ToListAsync(); 
-        
-        return new CompanyListResponse(companies);
+            .ToListAsync();
+
+        return new PagedList<CompanyItem>(items, totalCount, request.PageIndex, request.PageSize);
     }
 
     public async Task<Result<bool>> ArchiveCompany(Guid companyId)

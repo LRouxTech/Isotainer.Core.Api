@@ -1,10 +1,12 @@
-﻿using Isotainer.Module.Wash.Core.Entities;
+﻿using Isotainer.Core.Api.tempmodels;
+using Isotainer.Module.Wash.Core.Entities;
 using Isotainer.Module.Wash.Infrastructure.Database.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
+using Temp;
 
 namespace Isotainer.Module.Wash.Infrastructure.Database;
 
@@ -110,5 +112,7 @@ public class WashContext : DbContext
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)));
             }
         }
+        
+        modelBuilder.ApplyArchivedQueryFilter();
     }
 }

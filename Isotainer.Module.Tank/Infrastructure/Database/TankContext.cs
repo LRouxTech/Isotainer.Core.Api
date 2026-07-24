@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
+using Temp;
 
 namespace Isotainer.Module.Tank.Infrastructure.Database;
 
@@ -111,5 +112,7 @@ public class TankContext : DbContext
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)));
             }
         }
+        
+        modelBuilder.ApplyArchivedQueryFilter();
     }
 }

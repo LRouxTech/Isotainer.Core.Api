@@ -1,4 +1,5 @@
-﻿using Isotainer.Module.Finance.Core.Interfaces.Services;
+﻿using Isotainer.Core.Api.tempmodels;
+using Isotainer.Module.Finance.Core.Interfaces.Services;
 using Isotainer.Module.Finance.Core.Interfaces.Validators;
 using Isotainer.Module.Finance.Core.ViewModels.GeneralCost;
 using Isotainer.Module.Finance.Infrastructure.Database;
@@ -33,23 +34,21 @@ public class GeneralCostService(IFinanceDbContextFactory dbContextFactory, IGene
         return new GeneralCostUpdateResponse(generalCost.Id, generalCost.Cost);
     }
 
-    public async Task<Result<GeneralCostListResponse>> GetGeneralCosts()
+    public async Task<Result<PagedList<GeneralCostItem>>> GetGeneralCosts(PagedRequest request)
     {
         await using var financeContext = await dbContextFactory.CreateDbContextAsync();
-        var generalCosts = await financeContext.GeneralCosts
-            .Select(x => new 
-            {
-                x.Id,
-                x.CostItem,
-                x.Cost
-            })
+        var query = financeContext.GeneralCosts.AsNoTracking();
+        
+        var totalCount = await query.CountAsync();
+        
+        var items = await query
+            .OrderBy(x => x.Id)
+            .Skip((request.PageIndex - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(x => new GeneralCostItem(x.Id, x.CostItem.ToString(), x.Cost))
             .ToListAsync();
 
-        var result = generalCosts
-            .Select(x => new GeneralCostItem(x.Id, x.CostItem.ToString(), x.Cost))
-            .ToList();
-        
-        return new GeneralCostListResponse(result);
+        return new PagedList<GeneralCostItem>(items, totalCount, request.PageIndex, request.PageSize);
     }
     
     public async Task<Result<int>> GetTotalRecords()

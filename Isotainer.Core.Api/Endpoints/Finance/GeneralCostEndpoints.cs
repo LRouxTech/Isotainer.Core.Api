@@ -17,9 +17,9 @@ public static class GeneralCostEndpoints
             .WithTags("General Costs");
 
         group.MapGet("/",
-                async ([FromServices] IGeneralCostService generalCostService) =>
+                async ([AsParameters] PagedRequest request, [FromServices] IGeneralCostService generalCostService) =>
                 {
-                    var result = await generalCostService.GetGeneralCosts();
+                    var result = await generalCostService.GetGeneralCosts(request);
                     if (result.IsFailure)
                     {
                         return Results.BadRequest(result.Error);

@@ -1,4 +1,5 @@
 ﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Core.Api.tempmodels;
 using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.ViewModels.WashInstruction;
@@ -16,7 +17,7 @@ public static class WashInstructionEndpoints
         var group = endpoints.MapGroup(prefix)
             .WithTags("WashInstructions");
         
-        group.MapGet("/", async ([FromQuery] bool isFinished, [FromServices] IWashInstructionService washInstructionService, [FromServices] IIsotainerTankService tankService) =>
+        group.MapGet("/", async ([AsParameters] PagedRequest request, [FromQuery] bool isFinished, [FromServices] IWashInstructionService washInstructionService, [FromServices] IIsotainerTankService tankService) =>
             {
                 var result = await washInstructionService.GetWashInstructions(isFinished, null);
                 if (result.IsFailure)

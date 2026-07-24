@@ -2,4 +2,4 @@
 
 public record WashTypeListResponse(List<WashTypeItem> WashTypes);
 
-public class WashTypeItem(Guid WashTypeId, string Type, double Cost);
+public record WashTypeItem(Guid WashTypeId, string Type, double Cost);

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
+using Temp;
 
 namespace Isotainer.Module.Finance.Infrastructure.Database;
 
@@ -111,5 +112,7 @@ public class FinanceContext : DbContext
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)));
             }
         }
+        
+        modelBuilder.ApplyArchivedQueryFilter();
     }
 }

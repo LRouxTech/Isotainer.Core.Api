@@ -1,4 +1,5 @@
-﻿using Isotainer.Module.Wash.Core.Entities;
+﻿using Isotainer.Core.Api.tempmodels;
+using Isotainer.Module.Wash.Core.Entities;
 using Isotainer.Module.Wash.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.Interfaces.Validators;
 using Isotainer.Module.Wash.Core.ViewModels.WashType;
@@ -69,14 +70,22 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
     }
     
 
-    public async Task<Result<WashTypeListResponse>> GetWashTypes()
+    public async Task<Result<PagedList<WashTypeItem>>> GetWashTypes(PagedRequest request)
     {
         await using var washContext = await dbContextFactory.CreateDbContextAsync();
-        var washTypes = await washContext.WashTypes
+        
+        var query = washContext.WashTypes.AsNoTracking();
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderBy(x => x.Id)
+            .Skip((request.PageIndex - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(x => new WashTypeItem(x.Id, x.Type, x.Cost))
             .ToListAsync();
-        
-        return new  WashTypeListResponse(washTypes);
+
+        return new PagedList<WashTypeItem>(items, totalCount, request.PageIndex, request.PageSize);
     }
 
     public async Task<Result<bool>> ArchiveWashType(Guid washTypeId)
@@ -91,6 +100,8 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
         }
 
         washType.Archive();
+        washContext.WashTypes.Update(washType);
+        await washContext.SaveChangesAsync();
 
         return true;
     }

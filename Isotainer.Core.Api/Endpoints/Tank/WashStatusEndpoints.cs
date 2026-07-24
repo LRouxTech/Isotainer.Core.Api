@@ -1,4 +1,5 @@
 ﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Core.Api.tempmodels;
 using Isotainer.Module.Tank.Core.Interfaces.Services;
 using LRouxTech.Core.Auth.Api.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +14,9 @@ public static class WashStatusEndpoints
         var group = endpoints.MapGroup(prefix)
             .WithTags("WashStatus");
         
-        group.MapGet("/", async ([FromServices] IWashStatusService washStatusService) =>
+        group.MapGet("/", async ([AsParameters] PagedRequest request, [FromServices] IWashStatusService washStatusService) =>
             {
-                var result = await washStatusService.GetWashStatuses();
+                var result = await washStatusService.GetWashStatuses(request);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
