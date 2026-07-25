@@ -1,5 +1,7 @@
-﻿namespace Isotainer.Module.Tank.Core.ViewModels.WashStatus;
+﻿using Isotainer.Module.Tank.Core.Entities;
+
+namespace Isotainer.Module.Tank.Core.ViewModels.WashStatus;
 
 public record WashStatusListResponse(List<WashStatusItem> Items);
 
-public class WashStatusItem(Guid washStatusId, string name);
+public record WashStatusItem(Guid washStatusId, WashStatusEnum type);

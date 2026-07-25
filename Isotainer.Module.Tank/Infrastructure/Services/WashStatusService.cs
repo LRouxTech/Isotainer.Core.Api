@@ -21,7 +21,7 @@ public class WashStatusService(ITankDbContextFactory dbContextFactory) : IWashSt
             .OrderBy(x => x.Id)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(x => new WashStatusItem(x.Id, x.Type.ToString()))
+            .Select(x => new WashStatusItem(x.Id, x.Type))
             .ToListAsync();
 
         return new PagedList<WashStatusItem>(items, totalCount, request.PageIndex, request.PageSize);

@@ -10,7 +10,7 @@ public class IsotainerTankValidator : IIsotainerTankValidator
 {
     public Result<bool> ValidateCreateRequest(CreateIsotainerTankRequest request)
     {
-        if (request.CompanyId != Guid.Empty)
+        if (request.CompanyId == Guid.Empty)
         {
             return CompanyErrors.NotFound;
         }
@@ -24,7 +24,7 @@ public class IsotainerTankValidator : IIsotainerTankValidator
 
     public Result<bool> ValidateUpdateRequest(UpdateIsotainerTankRequest request)
     {
-        if (request.CompanyId != Guid.Empty)
+        if (request.CompanyId == Guid.Empty)
         {
             return CompanyErrors.NotFound;
         }
@@ -39,7 +39,7 @@ public class IsotainerTankValidator : IIsotainerTankValidator
 
     public Result<bool> ValidateChangeIsotainerWashStatus(ChangeWashStatusRequest request)
     {
-        if (request.WashStatusId != Guid.Empty)
+        if (request.WashStatusId == Guid.Empty)
         {
             return WashStatusErrors.NotFound;
         }
