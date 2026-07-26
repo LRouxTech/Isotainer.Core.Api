@@ -19,13 +19,13 @@ public static class WashInstructionEndpoints
         
         group.MapGet("/", async ([AsParameters] PagedRequest request, [FromQuery] bool isFinished, [FromServices] IWashInstructionService washInstructionService, [FromServices] IIsotainerTankService tankService) =>
             {
-                var result = await washInstructionService.GetWashInstructions(isFinished, null);
+                var result = await washInstructionService.GetWashInstructions(isFinished, null, request);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
                 }
 
-                var tankIds = result.Value.WashInstructions.Select(x => x.IsotainerTankId).ToList();
+                var tankIds = result.Value.Items.Select(x => x.IsotainerTankId).ToList();
 
                 var tanks = await tankService.GetIsotainerTanks(tankIds);
                 if (tanks.IsFailure)
@@ -33,7 +33,7 @@ public static class WashInstructionEndpoints
                     return Results.BadRequest(tanks.Error);
                 }
 
-                var washInstructions = result.Value.WashInstructions.Select(x => x with { TankNumber = tanks.Value[x.IsotainerTankId] }).ToList();
+                var washInstructions = result.Value.Items.Select(x => x with { TankNumber = tanks.Value[x.IsotainerTankId] }).ToList();
 
                 return Results.Ok(washInstructions);
 

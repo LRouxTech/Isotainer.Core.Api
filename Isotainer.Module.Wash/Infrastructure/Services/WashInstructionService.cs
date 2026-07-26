@@ -1,4 +1,5 @@
-﻿using Isotainer.Module.Wash.Core.Entities;
+﻿using Isotainer.Core.Api.tempmodels;
+using Isotainer.Module.Wash.Core.Entities;
 using Isotainer.Module.Wash.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.Interfaces.Validators;
 using Isotainer.Module.Wash.Core.ViewModels.WashInstruction;
@@ -62,17 +63,23 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         return new WashInstructionResponse(washInstruction.Id, washInstruction.IsotainerTankId, washInstruction.WashTypeId, washInstruction.InstructedOn);
     }
 
-    public  async Task<Result<WashInstructionsListResponse>> GetWashInstructions(bool isFinished, Guid? isotainerTankId)
+    public  async Task<Result<PagedList<WashInstructionItem>>> GetWashInstructions(bool isFinished, Guid? isotainerTankId, PagedRequest request)
     {
         await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        var query = washContext.WashInstructions.AsNoTracking();
+
+        var totalCount = await query.CountAsync();
         
-        var washInstructions = await washContext.WashInstructions
+        var items = await query
             .Where(x => isFinished ? x.FinishedOn != null : x.FinishedOn == null)
             .Where(x => isotainerTankId == null  || x.IsotainerTankId == isotainerTankId)
+            .OrderBy(x => x.Id)
+            .Skip((request.PageIndex - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(x => new WashInstructionItem(x.Id, x.IsotainerTankId, "", x.WashTypeId, x.WashType.Type,  x.InstructedOn ))
             .ToListAsync();
 
-        return new WashInstructionsListResponse(washInstructions);
+        return new PagedList<WashInstructionItem>(items, totalCount, request.PageIndex, request.PageSize);
     }
 
     public async Task<Result<List<CompletedWashInstructions>>> GetCompletedWashInstructions(Guid isotainerTankId, DateTime? from)
