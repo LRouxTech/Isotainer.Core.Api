@@ -20,7 +20,7 @@ public class WashInstructionValidator : IWashInstructionValidator
             return WashTypeErrors.NotFound;
         }
 
-        if (request.InstructedOn <= DateTime.UtcNow)
+        if (request.InstructedOn < DateTime.UtcNow.AddMinutes(-1))
         {
             return WashInstructionErrors.InvalidInstructedOnDate;
         }
