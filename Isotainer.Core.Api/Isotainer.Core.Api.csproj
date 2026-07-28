@@ -21,10 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Isotainer.Module.Finance\Isotainer.Module.Finance.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\Isotainer.Module.Tank\Isotainer.Module.Tank.csproj" />
     </ItemGroup>
 

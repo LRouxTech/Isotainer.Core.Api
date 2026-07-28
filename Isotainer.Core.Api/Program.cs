@@ -1,10 +1,7 @@
 using Isotainer.Core.Api.Auth;
 using Isotainer.Core.Api.Endpoints.Extensions;
-using Isotainer.Core.Api.Endpoints.Finance;
 using Isotainer.Core.Api.Endpoints.Tank;
 using Isotainer.Core.Api.Endpoints.Wash;
-using Isotainer.Module.Finance.Infrastructure.Database;
-using Isotainer.Module.Finance.Infrastructure.Database.Seed;
 using Isotainer.Module.Tank.Infrastructure.Database;
 using Isotainer.Module.Tank.Infrastructure.Database.Seed;
 using Isotainer.Module.Wash.Infrastructure.Database;
@@ -51,16 +48,6 @@ if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("Defaul
         });
     });
     
-    builder.Services.AddDbContextFactory<FinanceContext, FinanceDbContextFactory>(options =>
-    {
-        options.UseNpgsql(conString, x =>
-        {
-            x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-            x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "Finance");
-            x.MigrationsAssembly("Isotainer.Module.Finance");
-        });
-    });
-    
     builder.Services.AddDbContextFactory<TankContext, TankDbContextFactory>(options =>
     {
         options.UseNpgsql(conString, x =>
@@ -89,7 +76,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddAuthModule();
 builder.Services.AddCustomPermissions<IsotainerPermissions>();
 
-builder.Services.AddFinanceModule();
 builder.Services.AddTankModule();
 builder.Services.AddWashModule();
 
@@ -103,17 +89,14 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var userFactory = services.GetRequiredService<IDbContextFactory<UserContext>>();
-        var financeFactory = services.GetRequiredService<IDbContextFactory<FinanceContext>>();
         var tankFactory = services.GetRequiredService<IDbContextFactory<TankContext>>();
         var washFactory = services.GetRequiredService<IDbContextFactory<WashContext>>();
 
         await using var userContext = await userFactory.CreateDbContextAsync();
-        await using var financeContext = await financeFactory.CreateDbContextAsync();
         await using var tankContext = await tankFactory.CreateDbContextAsync();
         await using var washContext = await washFactory.CreateDbContextAsync();
 
         await userContext.Database.MigrateAsync(); 
-        await financeContext.Database.MigrateAsync();
         await tankContext.Database.MigrateAsync(); 
         await washContext.Database.MigrateAsync(); 
 
@@ -195,8 +178,6 @@ using (var scope = app.Services.CreateScope())
             IsotainerPermissions.Wash.UpdateWashInstruction,
         ]);
         
-        await FinanceDataSeeder.SeedGeneralCostsAsync(financeContext);
-        
         await TankDataSeeder.SeedWashStatusAsync(tankContext);
     }
     catch (Exception ex)
@@ -217,10 +198,6 @@ app.UseHttpsRedirection();
 app.MapRoleEndpoints();
 app.MapPermissionEndpoints();
 app.MapUserEndpoints();
-
-app.MapGeneralCostEndpoints();
-app.MapInvoiceEndpoints();
-app.MapInvoiceListEndpoints();
 
 app.MapCompanyEndpoints();
 app.MapIsotainerTankEndpoints();
