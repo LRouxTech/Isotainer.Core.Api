@@ -5,6 +5,7 @@ using Isotainer.Module.Wash.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.ViewModels.WashInstruction;
 using Isotainer.Module.Wash.Core.ViewModels.WashType;
 using LRouxTech.Core.Auth.Api.Authorization;
+using LRouxTech.Core.Auth.Infrastructure.Paged;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Wash;

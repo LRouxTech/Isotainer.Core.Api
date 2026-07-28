@@ -1,5 +1,5 @@
-﻿using Isotainer.Core.Api.tempmodels;
-using Isotainer.Module.Finance.Core.ViewModels.GeneralCost;
+﻿using Isotainer.Module.Finance.Core.ViewModels.GeneralCost;
+using LRouxTech.Core.Auth.Infrastructure.Paged;
 using LRouxTech.Core.ValidationResult;
 
 namespace Isotainer.Module.Finance.Core.Interfaces.Services;

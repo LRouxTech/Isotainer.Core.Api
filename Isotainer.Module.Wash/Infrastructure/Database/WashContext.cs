@@ -1,5 +1,4 @@
-﻿using Isotainer.Core.Api.tempmodels;
-using Isotainer.Module.Wash.Core.Entities;
+﻿using Isotainer.Module.Wash.Core.Entities;
 using Isotainer.Module.Wash.Infrastructure.Database.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;

@@ -1,9 +1,9 @@
-﻿using Isotainer.Core.Api.tempmodels;
-using Isotainer.Module.Finance.Core.Interfaces.Services;
+﻿using Isotainer.Module.Finance.Core.Interfaces.Services;
 using Isotainer.Module.Finance.Core.Interfaces.Validators;
 using Isotainer.Module.Finance.Core.ViewModels.GeneralCost;
 using Isotainer.Module.Finance.Infrastructure.Database;
 using Isotainer.Module.Finance.Infrastructure.Errors;
+using LRouxTech.Core.Auth.Infrastructure.Paged;
 using LRouxTech.Core.ValidationResult;
 using Microsoft.EntityFrameworkCore;
 

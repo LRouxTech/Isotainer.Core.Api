@@ -1,8 +1,8 @@
-﻿using Isotainer.Core.Api.tempmodels;
-using Isotainer.Module.Tank.Core.Entities;
+﻿using Isotainer.Module.Tank.Core.Entities;
 using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.ViewModels.WashStatus;
 using Isotainer.Module.Tank.Infrastructure.Database;
+using LRouxTech.Core.Auth.Infrastructure.Paged;
 using LRouxTech.Core.ValidationResult;
 using Microsoft.EntityFrameworkCore;
 

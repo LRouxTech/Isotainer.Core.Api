@@ -1,5 +1,5 @@
-﻿using Isotainer.Core.Api.tempmodels;
-using Isotainer.Module.Wash.Core.ViewModels.WashInstruction;
+﻿using Isotainer.Module.Wash.Core.ViewModels.WashInstruction;
+using LRouxTech.Core.Auth.Infrastructure.Paged;
 using LRouxTech.Core.ValidationResult;
 
 namespace Isotainer.Module.Wash.Core.Interfaces.Services;
