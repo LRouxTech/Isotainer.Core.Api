@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="LRouxTech.Core.Auth" Version="0.7.0" />
+      <PackageReference Include="LRouxTech.Core.Auth" Version="0.8.0" />
       <PackageReference Include="LRouxTech.Core.BaseModel" Version="0.4.0" />
       <PackageReference Include="LRouxTech.Core.ValidationResult" Version="0.2.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />

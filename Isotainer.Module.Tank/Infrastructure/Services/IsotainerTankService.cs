@@ -2,6 +2,7 @@
 using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.Interfaces.Validators;
 using Isotainer.Module.Tank.Core.ViewModels.IsotainerTank;
+using Isotainer.Module.Tank.Helpers.Extensions;
 using Isotainer.Module.Tank.Infrastructure.Database;
 using Isotainer.Module.Tank.Infrastructure.Errors;
 using LRouxTech.Core.Auth.Infrastructure.Paged;
@@ -168,5 +169,45 @@ public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsota
         
         return new IsotainerTankResponse(tank.Id, tank.TankNumber, tank.WashStatusId, tank.CompanyId, tank.LoadedOn);
 
+    }
+
+    public async Task<Result<int>> GetTotalActiveTanks()
+    {
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        return await tankContext.IsotainerTanks.CountAsync(x => x.UnloadedOn == null);
+    }
+
+    public async Task<Result<int>> GetNewInventory()
+    {
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        var newStatus = await tankContext.WashStatus.FirstOrDefaultAsync(x => x.Type == WashStatusEnum.New);
+        if (newStatus == null)
+        {
+            return WashStatusErrors.NotFound;
+        }
+        
+        return await tankContext.IsotainerTanks.CountAsync(x => x.WashStatusId == newStatus.Id);
+    }
+
+    public async Task<Result<string>> GetAverageTurnaroundTime()
+    {
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        
+        var timePairs = await tankContext.IsotainerTanks
+            .Where(x => x.UnloadedOn != null && x.LoadedOn != null)
+            .Select(x => new { x.LoadedOn, UnloadedOn = x.UnloadedOn!.Value })
+            .ToListAsync();
+
+        if (!timePairs.Any())
+        {
+            return Result<string>.Success("No data");
+        }
+
+        var avgTicks = (long)timePairs.Average(x => (x.UnloadedOn - x.LoadedOn).Ticks);
+        var avgTimeSpan = TimeSpan.FromTicks(avgTicks);
+
+        return Result<string>.Success(avgTimeSpan.ToReadableDuration());
+        
+        
     }
 }

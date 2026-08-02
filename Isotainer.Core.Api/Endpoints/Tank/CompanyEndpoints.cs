@@ -1,4 +1,6 @@
 ﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Core.Api.Extensions;
+using Isotainer.Core.Api.StatisticModels;
 using Isotainer.Core.Api.tempmodels;
 using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.ViewModels.Company;
@@ -88,8 +90,8 @@ public static class CompanyEndpoints
 
                 await Task.WhenAll(totalRecordsTask, lastUpdatedTask);
 
-                var totalRecords = totalRecordsTask.Result;
-                var lastUpdated = lastUpdatedTask.Result;
+                var totalRecords = await totalRecordsTask;
+                var lastUpdated = await lastUpdatedTask;
 
                 if (totalRecords.IsFailure)
                 {

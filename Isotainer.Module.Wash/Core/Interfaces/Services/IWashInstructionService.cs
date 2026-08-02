@@ -11,4 +11,5 @@ public interface IWashInstructionService
     Task<Result<PagedList<WashInstructionItem>>> GetWashInstructions(bool isFinished, Guid? isotainerTankId, PagedRequest request);
     Task<Result<List<CompletedWashInstructions>>> GetCompletedWashInstructions(Guid isotainerTankId, DateTime? from);
     Task<Result<bool>> ArchiveWashInstruction(Guid washInstructionId);
+    Task<Result<int>> GetTotalWashesBooked();
 }

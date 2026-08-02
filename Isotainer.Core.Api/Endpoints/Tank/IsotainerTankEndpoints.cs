@@ -1,9 +1,12 @@
 ﻿using Isotainer.Core.Api.Auth;
+using Isotainer.Core.Api.StatisticModels;
 using Isotainer.Core.Api.tempmodels;
 using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.ViewModels.IsotainerTank;
+using Isotainer.Module.Wash.Core.Interfaces.Services;
 using LRouxTech.Core.Auth.Api.Authorization;
 using LRouxTech.Core.Auth.Infrastructure.Paged;
+using LRouxTech.Core.ValidationResult;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Isotainer.Core.Api.Endpoints.Tank;
@@ -108,6 +111,53 @@ public static class IsotainerTankEndpoints
             })
             .WithName("ArchiveIsotainerTank")
             .RequirePermission(IsotainerPermissions.Tank.DeleteIsotainer)
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest);
+        
+        group.MapGet("/stats", async ([FromServices] IIsotainerTankService isotainerTankService, IWashInstructionService washInstructionService) =>
+            {
+                Task<Result<int>> totalActiveTanksTask = isotainerTankService.GetTotalActiveTanks();
+                Task<Result<int>> totalNewInventoryTask = isotainerTankService.GetNewInventory();
+                Task<Result<int>> totalWashesBookedTask = washInstructionService.GetTotalWashesBooked();
+                Task<Result<string>> averageTurnaroundTimeTask = isotainerTankService.GetAverageTurnaroundTime();
+                
+                await Task.WhenAll(totalActiveTanksTask, totalNewInventoryTask, totalWashesBookedTask, averageTurnaroundTimeTask);
+
+                var totalActiveTanks = await totalActiveTanksTask;
+                var totalNewInventory = await totalNewInventoryTask;
+                var totalWashesBooked = await totalWashesBookedTask;
+                var averageTurnaroundTime = await averageTurnaroundTimeTask;
+
+                if (totalActiveTanks.IsFailure)
+                {
+                    return Results.BadRequest(totalActiveTanks.Error);
+                }
+
+                if (totalNewInventory.IsFailure)
+                {
+                    return Results.BadRequest(totalNewInventory.Error);
+                }
+                if (totalWashesBooked.IsFailure)
+                {
+                    return Results.BadRequest(totalWashesBooked.Error);
+                }
+
+                if (averageTurnaroundTime.IsFailure)
+                {
+                    return Results.BadRequest(averageTurnaroundTime.Error);
+                }
+
+                return Results.Ok(new TankStatisticInformation
+                {
+                    TotalActiveTanks = totalActiveTanks.Value,
+                    TotalNewInventory = totalNewInventory.Value,
+                    TotalWashesBooked = totalWashesBooked.Value,
+                    AverageTurnaroundTime = averageTurnaroundTime.Value,
+                });
+
+            })
+            .WithName("GetIsotainerTanksStats")
+            .RequirePermission(IsotainerPermissions.Tank.ViewIsotainers)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 

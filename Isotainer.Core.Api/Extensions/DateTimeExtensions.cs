@@ -1,4 +1,4 @@
-﻿namespace Isotainer.Core.Api.tempmodels;
+﻿namespace Isotainer.Core.Api.Extensions;
 
 public static class DateTimeExtensions
 {
@@ -20,7 +20,7 @@ public static class DateTimeExtensions
 
         if (delta.TotalSeconds < 60)
         {
-            return delta.TotalSeconds == 1 ? "One second ago" : $"{delta.Seconds} seconds ago";
+            return Math.Abs(delta.TotalSeconds - 1) < 0.0001 ? "One second ago" : $"{delta.Seconds} seconds ago";
         }
         
         if (delta.TotalMinutes < 60)

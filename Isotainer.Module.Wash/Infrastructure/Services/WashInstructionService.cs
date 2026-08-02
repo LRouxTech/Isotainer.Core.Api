@@ -110,4 +110,10 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
 
         return true;
     }
+
+    public async Task<Result<int>> GetTotalWashesBooked()
+    {
+        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        return await washContext.WashInstructions.CountAsync(x => x.FinishedOn == null);
+    }
 }

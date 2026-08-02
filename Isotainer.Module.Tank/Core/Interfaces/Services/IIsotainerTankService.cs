@@ -15,4 +15,7 @@ public interface IIsotainerTankService
     Task<Result<bool>> ArchiveIsotainerTank(Guid isotainerTankId);
     Task<Result<IsotainerTankResponse>> ChangeWashStatus(Guid isotainerTankId, ChangeWashStatusRequest request);
     Task<Result<IsotainerTankResponse>> UnloadTank(Guid isotainerTankId);
+    Task<Result<int>> GetTotalActiveTanks();
+    Task<Result<int>> GetNewInventory();
+    Task<Result<string>> GetAverageTurnaroundTime();
 }
