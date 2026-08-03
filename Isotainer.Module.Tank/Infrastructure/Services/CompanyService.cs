@@ -71,6 +71,11 @@ public class CompanyService(ITankDbContextFactory dbContextFactory, ICompanyVali
     {
         await using var tankContext = await dbContextFactory.CreateDbContextAsync();
         var query = tankContext.Companies.AsNoTracking();
+        
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            query = query.Where(x => x.Name.ToLower().Contains(request.Search.ToLower()));
+        }
 
         var totalCount = await query.CountAsync();
 

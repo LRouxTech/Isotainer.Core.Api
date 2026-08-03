@@ -81,6 +81,11 @@ public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsota
     {
         await using var tankContext = await dbContextFactory.CreateDbContextAsync();
         var query = tankContext.IsotainerTanks.AsNoTracking();
+        
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            query = query.Where(x => x.TankNumber.ToLower().Contains(request.Search.ToLower()));
+        }
 
         var totalCount = await query.CountAsync();
 

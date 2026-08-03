@@ -76,6 +76,11 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
         
         var query = washContext.WashTypes.AsNoTracking();
 
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            query = query.Where(x => x.Type.ToLower().Contains(request.Search.ToLower()));
+        }
+
         var totalCount = await query.CountAsync();
 
         var items = await query
