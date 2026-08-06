@@ -9,6 +9,7 @@ using LRouxTech.Core.Auth.Api.Authorization;
 using LRouxTech.Core.Auth.Api.Endpoints;
 using LRouxTech.Core.Auth.Api.Extensions;
 using LRouxTech.Core.Auth.Infrastructure.Database;
+using LRouxTech.Core.Mail;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Scalar.AspNetCore;
@@ -75,6 +76,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddAuthModule();
 builder.Services.AddCustomPermissions<IsotainerPermissions>();
+builder.Services.AddEmailInfrastructure(builder.Configuration);
 
 builder.Services.AddTankModule();
 builder.Services.AddWashModule();
