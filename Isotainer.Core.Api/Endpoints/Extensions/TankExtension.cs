@@ -1,8 +1,10 @@
-﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
+﻿using Isotainer.Module.Tank.Core.Cache;
+using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.Interfaces.Validators;
 using Isotainer.Module.Tank.Infrastructure.Database;
 using Isotainer.Module.Tank.Infrastructure.Services;
 using Isotainer.Module.Tank.Infrastructure.Validator;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Isotainer.Core.Api.Endpoints.Extensions;
 
@@ -36,7 +38,13 @@ public static class TankExtension
     {
         services.AddScoped<ICompanyService, CompanyService>();
         services.AddScoped<IIsotainerTankService, IsotainerTankService>();
-        services.AddScoped<IWashStatusService, WashStatusService>();
+        services.AddScoped<WashStatusService>();
+        services.AddScoped<IWashStatusService>(provider => 
+            new CachedWashStatusService(
+                provider.GetRequiredService<WashStatusService>(),
+                provider.GetRequiredService<HybridCache>(),
+                provider.GetRequiredService<ILogger<CachedWashStatusService>>()
+            ));
 
         return services;
     }

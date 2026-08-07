@@ -15,11 +15,12 @@ public static class WashStatusEndpoints
         var group = endpoints.MapGroup(prefix)
             .WithTags("WashStatus");
         
-        group.MapGet("/", async ([AsParameters] PagedRequest request, [FromServices] IWashStatusService washStatusService) =>
+        group.MapGet("/", async ([AsParameters] PagedRequest request, [FromServices] IWashStatusService washStatusService, ILogger<Program> logger, CancellationToken ct) =>
             {
-                var result = await washStatusService.GetWashStatuses(request);
+                var result = await washStatusService.GetWashStatuses(request, ct);
                 if (result.IsFailure)
                 {
+                    logger.LogError($"{result.Error.Description} - {result.Error.Code}");
                     return Results.BadRequest(result.Error);
                 }
 

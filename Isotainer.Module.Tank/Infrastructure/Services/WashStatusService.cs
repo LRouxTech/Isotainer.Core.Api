@@ -10,19 +10,19 @@ namespace Isotainer.Module.Tank.Infrastructure.Services;
 
 public class WashStatusService(ITankDbContextFactory dbContextFactory) : IWashStatusService
 {
-    public async Task<Result<PagedList<WashStatusItem>>> GetWashStatuses(PagedRequest request)
+    public async Task<Result<PagedList<WashStatusItem>>> GetWashStatuses(PagedRequest request, CancellationToken ct)
     {
-        await using var tankContext = await dbContextFactory.CreateDbContextAsync();
+        await using var tankContext = await dbContextFactory.CreateDbContextAsync(ct);
         var query = tankContext.WashStatus.AsNoTracking();
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(cancellationToken: ct);
 
         var items = await query
             .OrderBy(x => x.Id)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(x => new WashStatusItem(x.Id, x.Type))
-            .ToListAsync();
+            .ToListAsync(cancellationToken: ct);
 
         return new PagedList<WashStatusItem>(items, totalCount, request.PageIndex, request.PageSize);
     }

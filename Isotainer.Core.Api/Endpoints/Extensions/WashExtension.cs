@@ -1,8 +1,11 @@
-﻿using Isotainer.Module.Wash.Core.Interfaces.Services;
+﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
+using Isotainer.Module.Tank.Infrastructure.Services;
+using Isotainer.Module.Wash.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.Interfaces.Validators;
 using Isotainer.Module.Wash.Infrastructure.Database;
 using Isotainer.Module.Wash.Infrastructure.Services;
 using Isotainer.Module.Wash.Infrastructure.Validator;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Isotainer.Core.Api.Endpoints.Extensions;
 
@@ -36,6 +39,7 @@ public static class WashExtension
     {
         services.AddScoped<IWashInstructionService, WashInstructionService>();
         services.AddScoped<IWashTypeService, WashTypeService>();
+
 
         return services;
     }

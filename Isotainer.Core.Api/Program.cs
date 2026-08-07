@@ -12,7 +12,10 @@ using LRouxTech.Core.Auth.Infrastructure.Database;
 using LRouxTech.Core.Mail;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.Caching.Hybrid;
 using Scalar.AspNetCore;
+using Serilog;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,7 +73,29 @@ if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("Defaul
     });
 }
 
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext());
+
 builder.Services.AddAuthorization();
+
+builder.Services.AddHybridCache(options =>
+{
+    options.MaximumPayloadBytes = 1024 * 1024;
+    options.MaximumKeyLength = 1024;
+    options.DefaultEntryOptions = new HybridCacheEntryOptions
+    {
+        Expiration = TimeSpan.FromMinutes(5),
+        LocalCacheExpiration = TimeSpan.FromMinutes(5)
+    };
+});
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "Isotainer_";
+});
 
 builder.Services.AddOpenApi();
 
@@ -84,6 +109,7 @@ builder.Services.AddWashModule();
 var app = builder.Build();
 
 app.UseCors("AllowFrontend");
+app.UseSerilogRequestLogging();
 
 using (var scope = app.Services.CreateScope())
 {

@@ -6,5 +6,5 @@ namespace Isotainer.Module.Tank.Core.Interfaces.Services;
 
 public interface IWashStatusService
 {
-    Task<Result<PagedList<WashStatusItem>>> GetWashStatuses(PagedRequest request);
+    Task<Result<PagedList<WashStatusItem>>> GetWashStatuses(PagedRequest request, CancellationToken ct);
 }

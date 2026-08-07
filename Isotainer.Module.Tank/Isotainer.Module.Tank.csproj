@@ -8,9 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="LRouxTech.Core.Auth" Version="0.14.0" />
+      <PackageReference Include="LRouxTech.Core.Auth" Version="0.15.0" />
       <PackageReference Include="LRouxTech.Core.BaseModel" Version="0.4.0" />
-      <PackageReference Include="LRouxTech.Core.ValidationResult" Version="0.2.0" />
+      <PackageReference Include="LRouxTech.Core.ValidationResult" Version="0.3.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
         <PrivateAssets>all</PrivateAssets>
