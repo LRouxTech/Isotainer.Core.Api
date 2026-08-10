@@ -12,7 +12,7 @@ namespace Isotainer.Module.Wash.Infrastructure.Services;
 
 public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWashInstructionValidator washInstructionValidator) : IWashInstructionService
 {
-    public async Task<Result<WashInstructionResponse>> CreateWashInstruction(CreateWashInstructionRequest request)
+    public async Task<Result<WashInstructionResponse>> CreateWashInstruction(CreateWashInstructionRequest request, CancellationToken ct)
     {
         var validation = washInstructionValidator.ValidateCreateInstruction(request);
         if (validation.IsFailure)
@@ -20,7 +20,7 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
             return validation.Error;
         }
         
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
 
         var newWashInstruction = new WashInstruction
         {
@@ -29,13 +29,13 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
             InstructedOn = request.InstructedOn,
         }.Create();
         
-        await washContext.WashInstructions.AddAsync(newWashInstruction);
-        await washContext.SaveChangesAsync();
+        await washContext.WashInstructions.AddAsync(newWashInstruction, ct);
+        await washContext.SaveChangesAsync(ct);
         
         return new WashInstructionResponse(newWashInstruction.Id, newWashInstruction.IsotainerTankId, newWashInstruction.WashTypeId, newWashInstruction.InstructedOn);
     }
 
-    public  async Task<Result<WashInstructionResponse>> UpdateWashInstruction(Guid washInstructionId, UpdateWashInstructionRequest request)
+    public  async Task<Result<WashInstructionResponse>> UpdateWashInstruction(Guid washInstructionId, UpdateWashInstructionRequest request, CancellationToken ct)
     {
         var validation = washInstructionValidator.ValidateUpdateInstruction(request);
         if (validation.IsFailure)
@@ -43,9 +43,9 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
             return validation.Error;
         }
         
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
         
-        var washInstruction = await washContext.WashInstructions.FindAsync(washInstructionId);
+        var washInstruction = await washContext.WashInstructions.FirstOrDefaultAsync(x => x.Id == washInstructionId, cancellationToken: ct);
 
         if (washInstruction == null)
         {
@@ -58,17 +58,17 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         washInstruction.Update();
         
         washContext.WashInstructions.Update(washInstruction);
-        await washContext.SaveChangesAsync();
+        await washContext.SaveChangesAsync(ct);
         
         return new WashInstructionResponse(washInstruction.Id, washInstruction.IsotainerTankId, washInstruction.WashTypeId, washInstruction.InstructedOn);
     }
 
-    public  async Task<Result<PagedList<WashInstructionItem>>> GetWashInstructions(bool isFinished, Guid? isotainerTankId, PagedRequest request)
+    public  async Task<Result<PagedList<WashInstructionItem>>> GetWashInstructions(bool isFinished, Guid? isotainerTankId, PagedRequest request, CancellationToken ct)
     {
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
         var query = washContext.WashInstructions.AsNoTracking();
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(cancellationToken: ct);
         
         var items = await query
             .Where(x => isFinished ? x.FinishedOn != null : x.FinishedOn == null)
@@ -82,9 +82,9 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         return new PagedList<WashInstructionItem>(items, totalCount, request.PageIndex, request.PageSize);
     }
 
-    public async Task<Result<List<CompletedWashInstructions>>> GetCompletedWashInstructions(Guid isotainerTankId, DateTime? from)
+    public async Task<Result<List<CompletedWashInstructions>>> GetCompletedWashInstructions(Guid isotainerTankId, DateTime? from, CancellationToken ct)
     {
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
         
         var washInstructions = await washContext.WashInstructions
             .Where(x => x.FinishedOn != null && x.FinishedOn > from)
@@ -95,11 +95,11 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         return washInstructions;
     }
 
-    public  async Task<Result<bool>> ArchiveWashInstruction(Guid washInstructionId)
+    public  async Task<Result<bool>> ArchiveWashInstruction(Guid washInstructionId, CancellationToken ct)
     {
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
 
-        var washInstruction = await washContext.WashInstructions.FindAsync(washInstructionId);
+        var washInstruction = await washContext.WashInstructions.FirstOrDefaultAsync(x => x.Id == washInstructionId, cancellationToken: ct);
 
         if (washInstruction == null)
         {
@@ -111,9 +111,9 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         return true;
     }
 
-    public async Task<Result<int>> GetTotalWashesBooked()
+    public async Task<Result<int>> GetTotalWashesBooked(CancellationToken ct)
     {
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
-        return await washContext.WashInstructions.CountAsync(x => x.FinishedOn == null);
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
+        return await washContext.WashInstructions.CountAsync(x => x.FinishedOn == null, cancellationToken: ct);
     }
 }

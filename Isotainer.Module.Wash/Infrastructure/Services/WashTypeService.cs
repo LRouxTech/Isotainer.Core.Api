@@ -12,7 +12,7 @@ namespace Isotainer.Module.Wash.Infrastructure.Services;
 
 public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeValidator washTypeValidator) : IWashTypeService
 {
-    public async Task<Result<WashTypeResponse>> CreateWashType(CreateWashTypeRequest request)
+    public async Task<Result<WashTypeResponse>> CreateWashType(CreateWashTypeRequest request, CancellationToken ct = default)
     {
         var validation = washTypeValidator.ValidateCreateWashType(request);
         if (validation.IsFailure)
@@ -20,8 +20,8 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
             return validation.Error;
         }
         
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
-        if (await washContext.WashTypes.AnyAsync(x => x.Type == request.Type))
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
+        if (await washContext.WashTypes.AnyAsync(x => x.Type == request.Type, cancellationToken: ct))
         {
             return WashTypeErrors.NotUnique;
         }
@@ -32,13 +32,13 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
             Cost = request.Cost,
         }.Create();
         
-        await washContext.WashTypes.AddAsync(newWashType);
-        await washContext.SaveChangesAsync();
+        await washContext.WashTypes.AddAsync(newWashType, ct);
+        await washContext.SaveChangesAsync(ct);
         
         return new WashTypeResponse(newWashType.Id, newWashType.Type, newWashType.Cost);
     }
 
-    public async Task<Result<WashTypeResponse>> UpdateWashType(Guid washTypeId, UpdateWashTypeRequest request)
+    public async Task<Result<WashTypeResponse>> UpdateWashType(Guid washTypeId, UpdateWashTypeRequest request, CancellationToken ct = default)
     {
         var validation = washTypeValidator.ValidateUpdateWashType(request);
         if (validation.IsFailure)
@@ -46,13 +46,13 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
             return validation.Error;
         }
         
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
-        if (await washContext.WashTypes.AnyAsync(x => x.Type == request.Type && x.Id != washTypeId))
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
+        if (await washContext.WashTypes.AnyAsync(x => x.Type == request.Type && x.Id != washTypeId, cancellationToken: ct))
         {
             return WashTypeErrors.NotUnique;
         }
         
-        var washType = await washContext.WashTypes.FindAsync(washTypeId);
+        var washType = await washContext.WashTypes.FirstOrDefaultAsync(x => x.Id == washTypeId, ct);
 
         if (washType == null)
         {
@@ -64,15 +64,15 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
         washType.Update();
         
         washContext.WashTypes.Update(washType);
-        await washContext.SaveChangesAsync();
+        await washContext.SaveChangesAsync(ct);
         
         return new WashTypeResponse(washType.Id, washType.Type, washType.Cost);
     }
     
 
-    public async Task<Result<PagedList<WashTypeItem>>> GetWashTypes(PagedRequest request)
+    public async Task<Result<PagedList<WashTypeItem>>> GetWashTypes(PagedRequest request, CancellationToken ct = default)
     {
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
         
         var query = washContext.WashTypes.AsNoTracking();
 
@@ -81,23 +81,23 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
             query = query.Where(x => x.Type.ToLower().Contains(request.Search.ToLower()));
         }
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(ct);
 
         var items = await query
             .OrderBy(x => x.Id)
             .Skip((request.PageIndex - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(x => new WashTypeItem(x.Id, x.Type, x.Cost))
-            .ToListAsync();
+            .ToListAsync(ct);
 
         return new PagedList<WashTypeItem>(items, totalCount, request.PageIndex, request.PageSize);
     }
 
-    public async Task<Result<bool>> ArchiveWashType(Guid washTypeId)
+    public async Task<Result<bool>> ArchiveWashType(Guid washTypeId, CancellationToken ct = default)
     {
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
 
-        var washType = await washContext.WashTypes.FindAsync(washTypeId);
+        var washType = await washContext.WashTypes.FirstOrDefaultAsync(x => x.Id == washTypeId, ct);
 
         if (washType == null)
         {
@@ -106,25 +106,25 @@ public class WashTypeService(IWashDbContextFactory dbContextFactory, IWashTypeVa
 
         washType.Archive();
         washContext.WashTypes.Update(washType);
-        await washContext.SaveChangesAsync();
+        await washContext.SaveChangesAsync(ct);
 
         return true;
     }
     
-    public async Task<Result<int>> GetTotalRecords()
+    public async Task<Result<int>> GetTotalRecords(CancellationToken ct = default)
     {
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
         var generalCostCount = await washContext.WashTypes
-            .CountAsync();
+            .CountAsync(ct);
         
         return generalCostCount;
     }
     
-    public async Task<Result<DateTime>> GetLastUpdated()
+    public async Task<Result<DateTime>> GetLastUpdated(CancellationToken ct = default)
     {
-        await using var washContext = await dbContextFactory.CreateDbContextAsync();
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
         var lastUpdatedOrNull = await washContext.WashTypes
-            .MaxAsync(x => (DateTime?)(x.UpdatedOn > x.CreatedOn ? x.UpdatedOn : x.CreatedOn));
+            .MaxAsync(x => (DateTime?)(x.UpdatedOn > x.CreatedOn ? x.UpdatedOn : x.CreatedOn), cancellationToken: ct);
 
         var lastUpdated = lastUpdatedOrNull ?? DateTime.MinValue;
         return lastUpdated;

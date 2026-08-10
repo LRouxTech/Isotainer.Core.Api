@@ -6,10 +6,10 @@ namespace Isotainer.Module.Tank.Core.Interfaces.Services;
 
 public interface ICompanyService
 {
-    Task<Result<CompanyResponse>> CreateCompany(CreateCompanyRequest request);
-    Task<Result<CompanyResponse>> UpdateCompany(Guid companyId, UpdateCompanyRequest request);
-    Task<Result<PagedList<CompanyItem>>> GetCompanyList(PagedRequest request);
-    Task<Result<bool>> ArchiveCompany(Guid companyId);
-    Task<Result<int>> GetTotalRecords();
-    Task<Result<DateTime>> GetLastUpdated();
+    Task<Result<CompanyResponse>> CreateCompany(CreateCompanyRequest request, CancellationToken ct);
+    Task<Result<CompanyResponse>> UpdateCompany(Guid companyId, UpdateCompanyRequest request, CancellationToken ct);
+    Task<Result<PagedList<CompanyItem>>> GetCompanyList(PagedRequest request, CancellationToken ct);
+    Task<Result<bool>> ArchiveCompany(Guid companyId, CancellationToken ct);
+    Task<Result<int>> GetTotalRecords(CancellationToken ct);
+    Task<Result<DateTime>> GetLastUpdated(CancellationToken ct);
 }

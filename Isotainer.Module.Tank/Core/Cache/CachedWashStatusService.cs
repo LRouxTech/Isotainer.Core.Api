@@ -1,5 +1,6 @@
 ﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
 using Isotainer.Module.Tank.Core.ViewModels.WashStatus;
+using Isotainer.Module.Tank.Helpers.Cache;
 using LRouxTech.Core.Auth.Infrastructure.Paged;
 using LRouxTech.Core.ValidationResult;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -11,7 +12,7 @@ public class CachedWashStatusService(IWashStatusService inner, HybridCache cache
 {
     public async Task<Result<PagedList<WashStatusItem>>> GetWashStatuses(PagedRequest request, CancellationToken ct = default)
     {
-        string cacheKey = $"wash-statuses:page-{request.PageIndex}:size-{request.PageSize}:search-{request.Search}";
+        string cacheKey = CacheKeys.WashStatus.Page(request.PageIndex, request.PageSize, request.Search);
 
         try
         {
@@ -29,10 +30,11 @@ public class CachedWashStatusService(IWashStatusService inner, HybridCache cache
 
                     return result.Value;
                 },
+                tags: [CacheKeys.WashStatus.Tag],
                 cancellationToken: ct
             );
 
-            return Result<PagedList<WashStatusItem>>.Success(pagedList);
+            return pagedList;
         }
         catch (ResultFailureException ex)
         {

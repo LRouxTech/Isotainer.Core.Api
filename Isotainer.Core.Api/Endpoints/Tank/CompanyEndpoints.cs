@@ -19,9 +19,9 @@ public static class CompanyEndpoints
         var group = endpoints.MapGroup(prefix)
             .WithTags("Company");
         
-        group.MapGet("/", async ([AsParameters] PagedRequest request, [FromServices] ICompanyService companyService) =>
+        group.MapGet("/", async ([AsParameters] PagedRequest request, [FromServices] ICompanyService companyService, CancellationToken ct) =>
             {
-                var result = await companyService.GetCompanyList(request);
+                var result = await companyService.GetCompanyList(request, ct);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
@@ -35,9 +35,9 @@ public static class CompanyEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapPost("/", async ([FromBody] CreateCompanyRequest createCompanyRequest, [FromServices] ICompanyService companyService) =>
+        group.MapPost("/", async ([FromBody] CreateCompanyRequest createCompanyRequest, [FromServices] ICompanyService companyService, CancellationToken ct) =>
             {
-                var result = await companyService.CreateCompany(createCompanyRequest);
+                var result = await companyService.CreateCompany(createCompanyRequest, ct);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
@@ -51,9 +51,9 @@ public static class CompanyEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapPut("/{CompanyId:guid}", async (Guid companyId, [FromBody] UpdateCompanyRequest createCompanyRequest, [FromServices] ICompanyService companyService) =>
+        group.MapPut("/{CompanyId:guid}", async (Guid companyId, [FromBody] UpdateCompanyRequest createCompanyRequest, [FromServices] ICompanyService companyService, CancellationToken ct) =>
             {
-                var result = await companyService.UpdateCompany(companyId, createCompanyRequest);
+                var result = await companyService.UpdateCompany(companyId, createCompanyRequest, ct);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
@@ -67,9 +67,9 @@ public static class CompanyEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapDelete("/{CompanyId:guid}/", async (Guid companyId, [FromServices] ICompanyService companyService) =>
+        group.MapDelete("/{CompanyId:guid}/", async (Guid companyId, [FromServices] ICompanyService companyService, CancellationToken ct) =>
             {
-                var result = await companyService.ArchiveCompany(companyId);
+                var result = await companyService.ArchiveCompany(companyId, ct);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
@@ -83,10 +83,10 @@ public static class CompanyEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapGet("/stats", async ([FromServices] ICompanyService companyService) =>
+        group.MapGet("/stats", async ([FromServices] ICompanyService companyService, CancellationToken ct) =>
             {
-                Task<Result<int>> totalRecordsTask = companyService.GetTotalRecords();
-                Task<Result<DateTime>> lastUpdatedTask = companyService.GetLastUpdated();
+                Task<Result<int>> totalRecordsTask = companyService.GetTotalRecords(ct);
+                Task<Result<DateTime>> lastUpdatedTask = companyService.GetLastUpdated(ct);
 
                 await Task.WhenAll(totalRecordsTask, lastUpdatedTask);
 

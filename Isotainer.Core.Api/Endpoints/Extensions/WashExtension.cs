@@ -1,11 +1,10 @@
-﻿using Isotainer.Module.Tank.Core.Interfaces.Services;
-using Isotainer.Module.Tank.Infrastructure.Services;
+﻿using Isotainer.Module.Wash.Core.Cache;
 using Isotainer.Module.Wash.Core.Interfaces.Services;
 using Isotainer.Module.Wash.Core.Interfaces.Validators;
 using Isotainer.Module.Wash.Infrastructure.Database;
 using Isotainer.Module.Wash.Infrastructure.Services;
 using Isotainer.Module.Wash.Infrastructure.Validator;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace Isotainer.Core.Api.Endpoints.Extensions;
 
@@ -37,8 +36,21 @@ public static class WashExtension
     
     public static IServiceCollection AddServiceWashModule(this IServiceCollection services)
     {
-        services.AddScoped<IWashInstructionService, WashInstructionService>();
-        services.AddScoped<IWashTypeService, WashTypeService>();
+        services.AddScoped<WashInstructionService>();
+        services.AddScoped<IWashInstructionService>(provider => 
+            new CachedWashInstructionService(
+                provider.GetRequiredService<WashInstructionService>(),
+                provider.GetRequiredService<HybridCache>(),
+                provider.GetRequiredService<ILogger<CachedWashInstructionService>>()
+            ));
+        
+        services.AddScoped<WashTypeService>();
+        services.AddScoped<IWashTypeService>(provider => 
+            new CachedWashTypeService(
+                provider.GetRequiredService<WashTypeService>(),
+                provider.GetRequiredService<HybridCache>(),
+                provider.GetRequiredService<ILogger<CachedWashTypeService>>()
+            ));
 
 
         return services;

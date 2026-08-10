@@ -18,9 +18,9 @@ public static class WashInstructionEndpoints
         var group = endpoints.MapGroup(prefix)
             .WithTags("WashInstructions");
         
-        group.MapGet("/", async ([AsParameters] PagedRequest request, [FromQuery] bool isFinished, [FromServices] IWashInstructionService washInstructionService, [FromServices] IIsotainerTankService tankService) =>
+        group.MapGet("/", async ([AsParameters] PagedRequest request, [FromQuery] bool isFinished, [FromServices] IWashInstructionService washInstructionService, [FromServices] IIsotainerTankService tankService, CancellationToken ct) =>
             {
-                var result = await washInstructionService.GetWashInstructions(isFinished, null, request);
+                var result = await washInstructionService.GetWashInstructions(isFinished, null, request, ct);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
@@ -28,7 +28,7 @@ public static class WashInstructionEndpoints
 
                 var tankIds = result.Value.Items.Select(x => x.IsotainerTankId).ToList();
 
-                var tanks = await tankService.GetIsotainerTanks(tankIds);
+                var tanks = await tankService.GetIsotainerTanks(tankIds, ct);
                 if (tanks.IsFailure)
                 {
                     return Results.BadRequest(tanks.Error);
@@ -44,9 +44,9 @@ public static class WashInstructionEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapPost("/", async ([FromBody] CreateWashInstructionRequest createWashInstructionRequest, [FromServices] IWashInstructionService washInstructionService) =>
+        group.MapPost("/", async ([FromBody] CreateWashInstructionRequest createWashInstructionRequest, [FromServices] IWashInstructionService washInstructionService, CancellationToken ct) =>
             {
-                var result = await washInstructionService.CreateWashInstruction(createWashInstructionRequest);
+                var result = await washInstructionService.CreateWashInstruction(createWashInstructionRequest, ct);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
@@ -60,9 +60,9 @@ public static class WashInstructionEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapPut("/{WashInstructionId:guid}", async (Guid washInstructionId, [FromBody] UpdateWashInstructionRequest updateWashInstructionRequest, [FromServices] IWashInstructionService washInstructionService) =>
+        group.MapPut("/{WashInstructionId:guid}", async (Guid washInstructionId, [FromBody] UpdateWashInstructionRequest updateWashInstructionRequest, [FromServices] IWashInstructionService washInstructionService, CancellationToken ct) =>
             {
-                var result = await washInstructionService.UpdateWashInstruction(washInstructionId, updateWashInstructionRequest);
+                var result = await washInstructionService.UpdateWashInstruction(washInstructionId, updateWashInstructionRequest, ct);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
@@ -76,9 +76,9 @@ public static class WashInstructionEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapDelete("/{washInstructionId:guid}/", async (Guid washInstructionId, [FromServices] IWashInstructionService washInstructionService) =>
+        group.MapDelete("/{washInstructionId:guid}/", async (Guid washInstructionId, [FromServices] IWashInstructionService washInstructionService, CancellationToken ct) =>
             {
-                var result = await washInstructionService.ArchiveWashInstruction(washInstructionId);
+                var result = await washInstructionService.ArchiveWashInstruction(washInstructionId, ct);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);

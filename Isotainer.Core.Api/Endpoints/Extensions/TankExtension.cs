@@ -36,8 +36,22 @@ public static class TankExtension
     
     public static IServiceCollection AddServiceTankModule(this IServiceCollection services)
     {
-        services.AddScoped<ICompanyService, CompanyService>();
-        services.AddScoped<IIsotainerTankService, IsotainerTankService>();
+        services.AddScoped<CompanyService>();
+        services.AddScoped<ICompanyService>(provider => 
+            new CachedCompanyService(
+                provider.GetRequiredService<CompanyService>(),
+                provider.GetRequiredService<HybridCache>(),
+                provider.GetRequiredService<ILogger<CachedCompanyService>>()
+            ));
+        
+        services.AddScoped<IsotainerTankService>();
+        services.AddScoped<IIsotainerTankService>(provider => 
+            new CachedIsotainerTankService(
+                provider.GetRequiredService<IsotainerTankService>(),
+                provider.GetRequiredService<HybridCache>(),
+                provider.GetRequiredService<ILogger<CachedIsotainerTankService>>()
+            ));
+        
         services.AddScoped<WashStatusService>();
         services.AddScoped<IWashStatusService>(provider => 
             new CachedWashStatusService(
