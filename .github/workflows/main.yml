@@ -52,8 +52,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           secrets: |
-            "NGINX_USERNAME=${{ secrets.NGINX_USERNAME }}"
-            "NGINX_PASSWORD=${{ secrets.NGINX_PASSWORD }}"
+            NGINX_USERNAME=${{ secrets.NGINX_USERNAME }}
+            NGINX_PASSWORD=${{ secrets.NGINX_PASSWORD }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
