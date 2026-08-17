@@ -11,12 +11,12 @@ COPY ["Isotainer.Core.Api/Isotainer.Core.Api.csproj", "Isotainer.Core.Api/"]
 COPY ["Isotainer.Module.Tank/Isotainer.Module.Tank.csproj", "Isotainer.Module.Tank/"]
 COPY ["Isotainer.Module.Wash/Isotainer.Module.Wash.csproj", "Isotainer.Module.Wash/"]
 
-RUN --mount=type=secret,id=NGINX_USERNAME \
-    --mount=type=secret,id=NGINX_PASSWORD \
+RUN --mount=type=secret,id=NGINX_USERNAME,env=NGINX_USERNAME \
+    --mount=type=secret,id=NGINX_PASSWORD,env=NGINX_PASSWORD \
     dotnet nuget add source "https://nuget.lodewykroux.co.za/v3/index.json" \
       --name "PrivateRegistry" \
-      --username "$(cat /run/secrets/NGINX_USERNAME)" \
-      --password "$(cat /run/secrets/NGINX_PASSWORD)" \
+      --username "$NGINX_USERNAME" \
+      --password "$NGINX_PASSWORD" \
       --store-password-in-clear-text
     
 RUN dotnet restore "Isotainer.Core.Api/Isotainer.Core.Api.csproj"
