@@ -1,0 +1,12 @@
+﻿services:
+  isotainer.core.api:
+    image: isotainer.core.api
+    ports:
+      - 5002:8080
+    build:
+      context: .
+      dockerfile: Isotainer.Core.Api/Dockerfile
+    volumes:
+      - "C:/Users/llode/AppData/Roaming/Microsoft/UserSecrets/25d574a4-c440-442d-ba38-e1fbc5ad1c4c/secrets.json:/app/appsettings.json:ro"
+
+
