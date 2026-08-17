@@ -1,70 +1,72 @@
-name: Build and Deploy C# App
+name: Build and Push Docker Image to GHCR
 
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_LOWER: LodewykRoux/isotainer-api
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '10.0.100' 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Push to Private NuGet Registry
-      env:
-        NGINX_USERNAME: ${{ secrets.NGINX_USER }}
-        NGINX_PASSWORD: ${{ secrets.NGINX_PASSWORD }}
-        NUGET_SECRET_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        # Check if the package source 'PrivateRegistry' is already registered on this self-hosted runner
-        if dotnet nuget list source | grep -Fq "PrivateRegistry"; then
-          echo "Source 'PrivateRegistry' already exists. Updating credentials..."
-          dotnet nuget update source "PrivateRegistry" \
-            --source "https://nuget.lodewykroux.co.za/v3/index.json" \
-            --username "$NGINX_USERNAME" \
-            --password "$NGINX_PASSWORD" \
-            --store-password-in-clear-text
-        else
-          echo "Source 'PrivateRegistry' not found. Adding fresh source..."
-          dotnet nuget add source "https://nuget.lodewykroux.co.za/v3/index.json" \
-            --name "PrivateRegistry" \
-            --username "$NGINX_USERNAME" \
-            --password "$NGINX_PASSWORD" \
-            --store-password-in-clear-text
-        fi
+      - name: Set lowercase repository path
+        run: |
+          echo "IMAGE_NAME_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Extract Docker metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short
 
-    - name: Build and Publish Application
-      run: |
-        dotnet publish -c Release -o ./publish /p:UseAppHost=false
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Copy files to VM via SSH
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        source: "./publish/*"
-        target: "/var/www/html/isotainer-api" # Replace with your target folder path on the VM
-        strip_prefix: "publish"
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Isotainer.Core.Api/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-    - name: Execute remote commands via SSH
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: 22
-        script: |
-          # Example: Restart Systemd service or system process
-          sudo systemctl restart myapp.service
+      - name: Deploy to VM over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ghcr.io/${{ env.IMAGE_NAME_LOWER }}:latest
+            docker stop isotainer-api || true
+            docker rm isotainer-api || true
+            docker run -d \
+              --name isotainer-api \
+              --restart always \
+              -p 5003:8080 \
+              -v /opt/isotainer-api/appsettings.json:/app/appsettings.json:ro \
+              ghcr.io/${{ env.IMAGE_NAME_LOWER }}:latest
