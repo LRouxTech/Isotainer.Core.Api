@@ -11,18 +11,27 @@ COPY ["Isotainer.Core.Api/Isotainer.Core.Api.csproj", "Isotainer.Core.Api/"]
 COPY ["Isotainer.Module.Tank/Isotainer.Module.Tank.csproj", "Isotainer.Module.Tank/"]
 COPY ["Isotainer.Module.Wash/Isotainer.Module.Wash.csproj", "Isotainer.Module.Wash/"]
 
-RUN --mount=type=secret,id=NGINX_USERNAME \
-    --mount=type=secret,id=NGINX_PASSWORD \
-    USER=$(cat /run/secrets/NGINX_USERNAME) && \
-    PASS=$(cat /run/secrets/NGINX_PASSWORD) && \
-    dotnet nuget add source "https://nuget.lodewykroux.co.za/v3/index.json" \
-      --name "PrivateRegistry" \
-      --username "$USER" \
-      --password "$PASS" \
-      --store-password-in-clear-text \
-      --configFile nuget.config && \
+RUN cat << 'EOF' > nuget.config
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+    <add key="PrivateRegistry" value="https://nuget.lodewykroux.co.za/v3/index.json" />
+  </packageSources>
+  <packageSourceCredentials>
+    <PrivateRegistry>
+      <add key="Username" value="%NGINX_USERNAME%" />
+      <add key="ClearTextPassword" value="%NGINX_PASSWORD%" />
+    </PrivateRegistry>
+  </packageSourceCredentials>
+</configuration>
+EOF
+
+# 2. Mount secrets directly as process environment variables during restore
+RUN --mount=type=secret,id=NGINX_USERNAME,env=NGINX_USERNAME \
+    --mount=type=secret,id=NGINX_PASSWORD,env=NGINX_PASSWORD \
     dotnet restore "Isotainer.Core.Api/Isotainer.Core.Api.csproj" --configfile nuget.config && \
-    rm -f nuget.config
+    rm nuget.config
     
 RUN dotnet restore "Isotainer.Core.Api/Isotainer.Core.Api.csproj"
 COPY . .
