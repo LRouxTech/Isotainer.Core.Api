@@ -67,12 +67,19 @@ public static class IsotainerTankEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         
-        group.MapPut("/{isotainerTankId:guid}/wash-status", async (Guid isotainerTankId, [FromBody] ChangeWashStatusRequest changeWashStatusRequest, [FromServices] IIsotainerTankService isotainerTankService, CancellationToken ct) =>
+        group.MapPut("/{isotainerTankId:guid}/complete", async (Guid isotainerTankId, [FromBody] ChangeWashStatusRequest changeWashStatusRequest, [FromServices] IIsotainerTankService isotainerTankService, [FromServices] IWashInstructionService washInstructionService, CancellationToken ct) =>
             {
                 var result = await isotainerTankService.ChangeWashStatus(isotainerTankId, changeWashStatusRequest, ct);
                 if (result.IsFailure)
                 {
                     return Results.BadRequest(result.Error);
+                }
+
+                var completeWash =
+                    await washInstructionService.CompleteWashInstruction(changeWashStatusRequest.WashInstructionId, ct);
+                if (completeWash.IsFailure)
+                {
+                    return Results.BadRequest(completeWash.Error);
                 }
 
                 return Results.Ok(result.Value);

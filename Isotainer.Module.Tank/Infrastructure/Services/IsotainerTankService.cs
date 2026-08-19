@@ -149,8 +149,13 @@ public class IsotainerTankService(ITankDbContextFactory dbContextFactory, IIsota
         {
             return IsotainerTankErrors.NotFound;
         }
-        
-        tank.WashStatusId = request.WashStatusId;
+
+        var completedWashStatus = await tankContext.WashStatus.FirstOrDefaultAsync(x => x.Type == WashStatusEnum.Clean, cancellationToken: ct);
+
+        if (completedWashStatus != null) 
+            tank.WashStatusId = completedWashStatus.Id;
+        else 
+            return WashStatusErrors.NotFound;
         tank.Update();
         await tankContext.IsotainerTanks.AddAsync(tank, ct);
         await tankContext.SaveChangesAsync(ct);

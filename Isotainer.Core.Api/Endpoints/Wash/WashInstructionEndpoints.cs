@@ -35,8 +35,15 @@ public static class WashInstructionEndpoints
                 }
 
                 var washInstructions = result.Value.Items.Select(x => x with { TankNumber = tanks.Value[x.IsotainerTankId] }).ToList();
+                
+                var pagedResult = new PagedList<WashInstructionItem>(
+                    washInstructions, 
+                    result.Value.TotalCount, 
+                    request.PageIndex, 
+                    request.PageSize
+                );
 
-                return Results.Ok(washInstructions);
+                return Results.Ok(pagedResult);
 
             })
             .WithName("GetWashInstructions")

@@ -22,6 +22,12 @@ public class CachedWashInstructionService(IWashInstructionService inner, HybridC
         await cache.RemoveByTagAsync(CacheKeys.WashInstruction.Tag, ct);
         return await inner.UpdateWashInstruction(washInstructionId, request, ct);
     }
+    
+    public async Task<Result<WashInstructionResponse>> CompleteWashInstruction(Guid washInstructionId, CancellationToken ct)
+    {
+        await cache.RemoveByTagAsync(CacheKeys.WashInstruction.Tag, ct);
+        return await inner.CompleteWashInstruction(washInstructionId, ct);
+    }
 
     public async Task<Result<PagedList<WashInstructionItem>>> GetWashInstructions(bool isFinished, Guid? isotainerTankId, PagedRequest request, CancellationToken ct)
     {

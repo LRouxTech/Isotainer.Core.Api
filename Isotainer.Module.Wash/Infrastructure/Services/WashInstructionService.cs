@@ -63,6 +63,22 @@ public class WashInstructionService(IWashDbContextFactory dbContextFactory, IWas
         return new WashInstructionResponse(washInstruction.Id, washInstruction.IsotainerTankId, washInstruction.WashTypeId, washInstruction.InstructedOn);
     }
 
+    public async Task<Result<WashInstructionResponse>> CompleteWashInstruction(Guid washInstructionId, CancellationToken ct)
+    {
+        await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
+        
+        var washInstruction = await washContext.WashInstructions.FirstOrDefaultAsync(x => x.Id == washInstructionId, cancellationToken: ct);
+        if (washInstruction == null)
+        {
+            return WashInstructionErrors.NotFound;
+        }
+        washInstruction.FinishedOn = DateTime.Now;
+        washContext.WashInstructions.Update(washInstruction);
+        await washContext.SaveChangesAsync(ct);
+
+        return new WashInstructionResponse(washInstruction.Id, washInstruction.IsotainerTankId, washInstruction.WashTypeId, washInstruction.InstructedOn);
+    }
+
     public  async Task<Result<PagedList<WashInstructionItem>>> GetWashInstructions(bool isFinished, Guid? isotainerTankId, PagedRequest request, CancellationToken ct)
     {
         await using var washContext = await dbContextFactory.CreateDbContextAsync(ct);
